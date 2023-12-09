@@ -7,6 +7,7 @@
 # include <netinet/in.h>
 # include <unistd.h>
 # include <poll.h>
+# include <fcntl.h>
 
 # define BUF_LEN 1024
 # define USER_MAX 128
@@ -20,7 +21,7 @@ public:
 	Server &operator=(const Server &orig);
 
 	int				getServerFd(void) const;
-	struct pollfd	*getPollFds(void) const;
+	struct pollfd	*getPollFds(void);
 	void			addClient(void);
 	void			readMessage(int clientFd);
 	void			runCommand(int clientFd);

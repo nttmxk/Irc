@@ -28,7 +28,7 @@ int Server::getServerFd() const {
 	return serverFd;
 }
 
-struct pollfd *Server::getPollFds() const {
+struct pollfd *Server::getPollFds() {
 	return pollFds;
 }
 
@@ -41,9 +41,10 @@ void Server::setPoll(int index, int fd, short events, short revents) {
 void Server::addClient(void) {
 	struct sockaddr_in	clientAddress;
 	int					clientFd;
+	socklen_t			clientAddressSize = sizeof(clientAddress);
 
 	if ((clientFd = accept(serverFd, (struct sockaddr *) &clientAddress,
-						   sizeof(serverAddress))) == -1)
+						   &clientAddressSize)) == -1)
 		throw std::runtime_error("Error\nCannot open client socket\n");
 
 	if (clientFd >= USER_MAX + 4) {
