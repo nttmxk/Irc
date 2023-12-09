@@ -35,10 +35,10 @@ struct pollfd* Server::getPollFds() const {
 	return pollFds;
 }
 
-void Server::setPoll(int fd, short events, short revents) {
-	pollFds[_clientNum].fd = fd;
-	pollFds[_clientNum].events = events;
-	pollFds[_clientNum].revents = revents;
+void Server::setPoll(int index, int fd, short events, short revents) {
+	pollFds[index].fd = fd;
+	pollFds[index].events = events;
+	pollFds[index].revents = revents;
 }
 
 void Server::addClient(void) {
