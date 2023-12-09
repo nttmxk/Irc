@@ -41,4 +41,49 @@ void Server::setPoll(int fd, short events, short revents) {
 	pollFds[_clientNum].revents = revents;
 }
 
+void Server::addClient(void) {
+	struct sockaddr_in	clientAddress;
+	int					clientFd;
+
+	if ((clientFd = accept(serverFd, (struct sockaddr *) &clientAddress,
+						   sizeof(serverAddress))) == -1)
+		throw std::runtime_error("Error\nCannot open client socket\n");
+
+	if (clientFd >= USER_MAX + 4) {
+		close(clientFd);
+		throw std::runtime_error("Error\nReached USER_MAX\n");
+	}
+
+	if (fcntl(clientFd, F_SETFL, O_NONBLOCK) == -1) {
+		close(clientFd);
+		throw std::runtime_error("Error\nfcntl\n");
+	}
+
+	setPoll(clientFd, clientFd, POLLIN | POLLHUP, 0);
+}
+
+void Server::readMessage(int clientFd) {
+	int messageSize = read(clientFd, buffer, BUF_LEN);
+
+	if (messageSize < 0) {
+		setPoll(clientFd, -1, 0, 0);
+		close(clientFd);
+		throw std::runtime_error("Error\nmessageSize < 0\n");
+	}
+	if (messageSize == 0) // when connection is closed, this is not an error right?
+	{
+//		runCommand(clientFd);
+		setPoll(clientFd, -1, 0, 0);
+		close(clientFd);
+	} else // Ctrl+D handling? saving buffer?
+	{
+		runCommand(clientFd);
+	}
+}
+
+void Server::runCommand(int clientFd) {
+	;
+}
+
+
 Server::~Server() {}
