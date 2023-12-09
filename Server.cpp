@@ -9,13 +9,11 @@ Server::Server(int portNum, std::string pwd) {
 	serverAddress.sin_port = htons(portNum);
 	serverAddress.sin_addr.s_addr = INADDR_ANY;
 
-	if (bind(serverFd, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1)
-	{
+	if (bind(serverFd, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) == -1) {
 		close(serverFd);
 		exit(1);
 	}
-	if (listen(serverFd, USER_MAX) == -1)
-	{
+	if (listen(serverFd, USER_MAX) == -1) {
 		close(serverFd);
 		exit(1);
 	}
@@ -27,11 +25,7 @@ int Server::getServerFd() const {
 	return serverFd;
 }
 
-int Server::getClientNum() const {
-	return _clientNum;
-}
-
-struct pollfd* Server::getPollFds() const {
+struct pollfd *Server::getPollFds() const {
 	return pollFds;
 }
 
