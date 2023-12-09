@@ -17,8 +17,11 @@ Server::Server(int portNum, std::string pwd) {
 		close(serverFd);
 		exit(1);
 	}
-	setPoll(serverFd, POLLIN, 0);
-	// set the clientFds
+	/*log*/ std::clog << "ServerFD : " << serverFd << '\n';
+	for (int i = 0; i < USER_MAX + 4; ++i) {
+		setPoll(i, -1, 0, 0);
+	}
+	setPoll(serverFd, serverFd, POLLIN, 0);
 }
 
 int Server::getServerFd() const {
