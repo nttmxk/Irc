@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "../includes/Server.hpp"
 
 Server::Server(int portNum, std::string pwd) {
 	_pwd = pwd;

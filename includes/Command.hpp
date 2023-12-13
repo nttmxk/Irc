@@ -15,45 +15,9 @@ public:
 	void parsing(std::string);
 
 /* Connection Registration  */
-
-	/* PASS <password>
-	 * used to set a 'connection password'
-	 * Numeric Replies: ERR_NEEDMOREPARAMS (461)
-	 * 					ERR_ALREADYREGISTRED (462)
-	 * 					ERR_PASSWDMISMATCH (464)
-	 * 서버에서 예상한 비밀번호가 아니면, 464를 보낸 후 ERROR와 함께 연결 닫기
-	 */
-	void pass(Client& client, std::string password) const;
-
-	/* NICK <nickname>
-	 * used to give user a nickname or change the existing one.
-	 * Numeric Replies: ERR_NONICKNAMEGIVEN (431)         
-	 *					ERR_ERRONEUSNICKNAME (432)  
-     *					ERR_NICKNAMEINUSE (433)       
-	 *					ERR_NICKCOLLISION (436)
-	 *    				ERR_UNAVAILRESOURCE             
-	 *					ERR_RESTRICTED
-	 * 유효하지 않은 닉네임일 경우, 432 보낸 후 커멘드 무시
-	 * 닉네임 중복이 있을 경우, 433 보낸 후 커멘드 무시
-	 * 닉네임 파라미터 못받았을 경우, 431 보낸 후 커멘드 무시
-	 * 닉네임 변경 성공 시, <old nickname>!<user>@localhost NICK <new nickname> 출력 ex) oldhio!root@127.0.0.1 NICK newhio
-	 */
-	void nick(Client& client, std::string nickname) const;
-
-	/* USER <username> 0 * <realname>
-	 * used at the beginning of connection to specify the username and realname of a new user.
-	 * 클라이언트의 정보를 서버에 알려줌
-	 * Numeric Replies: ERR_NEEDMOREPARAMS (461)
-	 * 					ERR_ALREADYREGISTRED (462)
-	 * realname에는 공백문자가 포함될 수 있고, realname 바로 앞에 ':'을 붙여야 함
-	 * username의 최대길이는 USERLEN RPL_ISUPPORT 파라미터로 정할 수 있고, 최대길이가 정해지면 그 길이로 자동으로 잘려야 함
-	 * username의 최소길이는 1, 빈문자열일 경우, 461 보낸 후 기본값 사용...?
-	 * 이미 서버에 등록되어 있는 경우, 462 보낸 후, fail 시도...?
-	 * Ident 프로토콜을 사용하여 이름을 이미 수신했다면, 명령 무시..?
-	 * Ident 프로토콜에서 사용자 이름이 없는 경우, 등록하고 username 앞에 ~ 추가..?
-	 * Example: USER amy 0 * :Amy Ponds
-	 */
-	void user(Client& client, std::string userName, std::string realName);
+	void pass(Client& client, const std::string password) const;
+	void nick(Client& client, std::string nickname, const std::map<int, Client> clients) const;
+	void user(Client& client, std::string userName, std::string realName) const;
 
 	/* OPER <name> <password>
 	 * used by a normal user to obtain IRC operator privileges

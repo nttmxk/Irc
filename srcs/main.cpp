@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "../includes/Server.hpp"
 #include <iostream>
 
 int checkArg(int argc, char *argv[]) {
