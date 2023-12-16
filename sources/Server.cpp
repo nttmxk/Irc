@@ -80,7 +80,7 @@ void Server::readMessage(int clientFd) {
 }
 
 void Server::runCommand(int clientFd) {
-	;
+	(void)clientFd;
 }
 
 

@@ -3,10 +3,11 @@
 
 # include <string>
 # include <vector>
+# include <map>
 
 class Channel;
 class Client;
-typedef enum ChannelMode;
+// typedef enum ChannelMode;
 
 class Command {
 private:
