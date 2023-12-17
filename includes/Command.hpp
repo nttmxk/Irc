@@ -1,24 +1,46 @@
 #ifndef COMMAND_HPP
 # define COMMAND_HPP
 
+# include "../includes/NumericReply.hpp"
+# include "../includes/Client.hpp"
+
 # include <string>
 # include <vector>
-# include <map>
 
 class Channel;
-class Client;
 // typedef enum ChannelMode;
+
+enum CommandType {
+	PASS = 0,
+	NICK,
+	USER,
+	COMMAND_CNT
+};
+
+static const std::string commandTypeStr[3] = {"PASS", "NICK", "USER"};
 
 class Command {
 private:
+	Client*						client;
+	std::string					message;
+	std::vector<std::string>	tokens;
+
+	Command();
+	Command(const Command& abj);
+	~Command();
 
 public:
-	void parsing(std::string);
+	Command(Client * _client, const std::string _message);
+
+private:
+	void parseMessage();
+	void execute(std::string cmd);
+	void sendReply(std::string);
 
 /* Connection Registration  */
-	void pass(Client& client, const std::string password) const;
-	void nick(Client& client, std::string nickname, const std::map<int, Client> clients) const;
-	void user(Client& client, std::string userName, std::string realName) const;
+	void pass();
+	void nick();
+	void user();
 
 	/* OPER <name> <password>
 	 * used by a normal user to obtain IRC operator privileges

@@ -1,5 +1,4 @@
 #include "../../includes/Command.hpp"
-#include "../../includes/Client.hpp"
 #include <map>
 
 /*
@@ -55,18 +54,34 @@ static bool isNicknameAlreadyInUse(const int client_fd, const std::string nickna
  * 닉네임 파라미터 못받았을 경우, 431 보낸 후 커멘드 무시
  * 닉네임 변경 성공 시, <old nickname>!<user>@localhost NICK <new nickname> 출력 ex) oldhio!root@127.0.0.1 NICK newhio
  */
-void Command::nick(Client& client, std::string nickname, const std::map<int, Client> clients) const {
-	if (nickname == "") {
-		// ERR_NONICKNAMEGIVEN (431) 
-	} else if (!isValidNickname(nickname)) {
-		// 유효한 비밀번호인지 확인
-		// ERR_ERRONEUSNICKNAME (432)  
-	} else if (isNicknameAlreadyInUse(client.getClientFd(), nickname, clients)) {
-		// 중복확인
-		// ERR_NICKNAMEINUSE (433) 
-	} else {
-		client.setNickname(nickname);
+void Command::nick() {
+	std::string servername = "irc.local";
+	std::string nick = client->getNickname();
+
+	if (tokens.size() < 1) {
+		this->sendReply(ERR_NONICKNAMEGIVEN(servername, nick));
+		return;
 	}
+
+	std::string newNickname = tokens[1];
+	const std::map<int, Client> clients; // = client->server.clientList
+
+	if (newNickname == "") {
+		this->sendReply(ERR_NONICKNAMEGIVEN(servername, nick));
+		return;
+	} 
+	// 유효한 비밀번호인지 확인
+	if (!isValidNickname(newNickname)) { 
+		this->sendReply(ERR_ERRONEUSNICKNAME(servername, nick, newNickname));
+		return;
+	} 
+	// 중복확인
+	if (isNicknameAlreadyInUse(client->getClientFd(), newNickname, clients)) {
+		this->sendReply(ERR_NICKNAMEINUSE(servername, nick, newNickname));
+		return;
+	} 
+	
+	client->setNickname(newNickname);
 
 	// ERR_NICKCOLLISION (436) - 변경 중 서버와 충돌이 발생했을 때...?
 }

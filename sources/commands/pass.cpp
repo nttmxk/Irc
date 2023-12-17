@@ -1,5 +1,4 @@
 #include "../../includes/Command.hpp"
-#include "../../includes/Client.hpp"
 
 /* PASS <password>
  * used to set a 'connection password'
@@ -10,15 +9,25 @@
  * 					ERR_PASSWDMISMATCH (464) : 제공된 비밀번호와 서버에서 기대하는 비밀번호 간의 불일치
  * 서버에서 예상한 비밀번호가 아니면, (464)를 보낸 후 ERROR와 함께 연결 닫기
  */
-void Command::pass(Client& client, const std::string password) const {
-	if (password == "") {
-		// ERR_NEEDMOREPARAMS (461)
-	} else if (client.isAuthorized()) {
-		// ERR_ALREADYREGISTRED (462)
-	} else if (client.getPassword() != password) {
-		// ERR_PASSWDMISMATCH (464)
+void Command::pass() {
+
+	const std::string servername = "irc.local";
+	const std::string nick = this->client->getNickname();
+
+	if (this->tokens.size() < 2) {
+		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "PASS"));
+		return;
+	}
+
+	std::string password = this->tokens[1];
+	if (this->client->isAuthorized()) {
+		this->sendReply(ERR_ALREADYREGISTRED(servername, nick));
+		return;
+	} else if (this->client->getPassword() != password) {
+		this->sendReply(ERR_PASSWDMISMATCH(servername, nick));
+		return;
 	} else {
-		client.setPassword(password);
+		this->client->setPassword(password);
 	}
 	
 } 

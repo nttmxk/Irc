@@ -42,6 +42,9 @@
 // ERR_NOSUCHCHANNEL (403)		// join, part, topic, invite, kick, mode
 # define ERR_NOSUCHCHANNEL(servername, nick, channel) \
 	":" + servername + " 403 " + nick + " #" + channel + " :No such channel\r\n"
+// ERR_NONICKNAMEGIVEN (431)	// nick
+# define ERR_NONICKNAMEGIVEN(servername, nick) \
+	":" + servername + " 432 " + nick + " :No nickname given\r\n"
 // ERR_ERRONEUSNICKNAME (432)	// nick
 # define ERR_ERRONEUSNICKNAME(servername, nick, newNickname) \
 	":" + servername + " 432 " + nick + " " + newNickname + " :Erroneous Nickname\r\n"
@@ -83,7 +86,7 @@ ERR_NORECIPIENT (411)		// privmsg
 ERR_NOTEXTTOSEND (412)		// privmsg
 ERR_NOTOPLEVEL (413)		// privmsg
 ERR_WILDTOPLEVEL (414)		// privmsg
-ERR_NONICKNAMEGIVEN (431)	// nick
+
 ERR_NICKCOLLISION (436)		// nick
 
 // ERR_CHANNELISFULL (471)		// join
