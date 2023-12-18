@@ -37,8 +37,8 @@ private:
 	struct pollfd					pollFds[USER_MAX + 4];
 	char							buffer[BUF_LEN];
 	std::map<int, std::string>		message;
-	std::map<int, Client>			clients;
-	std::map<std::string, Channel>	channels;
+	std::map<int, Client*>			clients;
+	std::map<std::string, Channel*>	channels;
 	std::string						_pwd;
 
 	void				setPoll(int index, int fd, short events, short revents);
