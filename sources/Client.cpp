@@ -3,7 +3,6 @@
 Client::Client(int _fd) 
 	: client_fd(_fd), 
 	  nickname(""), userName(""), realName(""), 
-	  password(""),
 	  _authorized(false) {}
 
 Client::~Client() {}

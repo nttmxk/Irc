@@ -45,6 +45,7 @@ int Command::getCommandType()
 		if (commandTypeStr[type] == cmd)
 			return type;
 	}
+	return -1;
 }
 
 void Command::sendReply(std::string replyMsg) {
