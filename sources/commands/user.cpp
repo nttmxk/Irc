@@ -36,4 +36,8 @@ void Command::user() {
 	client->setUserName(userName);
 	client->setRealName(realName);
 	client->checkAuthorization();
+	this->sendReply(RPL_WELCOME(servername, nick));
+	this->sendReply(RPL_YOURHOST(servername, nick, "version"));
+	this->sendReply(RPL_CREATED(servername, nick, "creationDate"));
+//	this->sendReply(RPL_MYINFO(servername, nick, ));
 }
