@@ -61,7 +61,7 @@ void Server::addClient(void) {
 }
 
 void Server::readMessage(int clientFd) {
-	int readSize = read(clientFd, buffer, BUF_LEN);
+	int readSize = recv(clientFd, buffer, BUF_LEN - 1, MSG_DONTWAIT);
 
 	if (readSize < 0) {
 		setPoll(clientFd, -1, 0, 0);
