@@ -61,22 +61,29 @@ void Server::addClient(void) {
 }
 
 void Server::readMessage(int clientFd) {
-	int messageSize = read(clientFd, buffer, BUF_LEN);
+	int readSize = read(clientFd, buffer, BUF_LEN);
 
-	if (messageSize < 0) {
+	if (readSize < 0) {
 		setPoll(clientFd, -1, 0, 0);
 		close(clientFd);
-		throw std::runtime_error("Error\nmessageSize < 0\n");
+		throw std::runtime_error("Error\nMessage read size < 0\n");
 	}
-	if (messageSize == 0) // when connection is closed, this is not an error right?
+	if (readSize == 0) // when connection is closed, this is not an error right?
 	{
-//		runCommand(clientFd);
-		setPoll(clientFd, -1, 0, 0);
-		close(clientFd);
-	} else // Ctrl+D handling? saving buffer?
-	{
+		message[clientFd] = "QUIT :<reason>\r\n"; // reason
 		runCommand(clientFd);
+		setPoll(clientFd, -1, 0, 0);
+		close(clientFd);
 	}
+	else if (readSize > 1 && buffer[readSize - 2] == '\r' && buffer[readSize - 1] == '\n')
+	{
+		message[clientFd].append(buffer);
+		runCommand(clientFd);
+		// when runCommand executes <QUIT>... then setPoll and close should be called here too?
+		// message flush
+	}
+	else // Ctrl + D handling
+		message[clientFd].append(buffer);
 }
 
 void Server::runCommand(int clientFd) {
