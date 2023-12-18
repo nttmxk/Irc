@@ -24,10 +24,6 @@ std::string Client::getRealName() const {
 	return this->realName;
 }
 
-std::string	Client::getPassword() const {
-	return this->password;
-}
-    
 void Client::setNickname(const std::string nickname) {
 	this->nickname = nickname;
 }
@@ -38,10 +34,6 @@ void Client::setUserName(const std::string userName) {
 
 void Client::setRealName(const std::string realName) {
 	this->realName = realName;
-}
-
-void Client::setPassword(const std::string password) {
-	this->password = password;
 }
 
 bool Client::isAuthorized() const {
