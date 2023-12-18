@@ -12,7 +12,6 @@ Command::Command(Client * _client, const std::string _message)
 	: client(_client), message(_message) {
 	
 	this->parseMessage();
-	this->execute(tokens[0]);
 }
 
 void Command::parseMessage() {
@@ -37,22 +36,15 @@ void Command::parseMessage() {
     }
 }
 
-void Command::execute(std::string cmd) {
+int Command::getCommandType()
+{
+	std::string cmd = tokens[0];
 	int type = 0;
-	for ( ; type<4; type++) {
-		if (commandTypeStr[type] == cmd) break;
-	}
 
-	switch (type) {
-		case (PASS):
-			this->pass(); break;
-		case (NICK):
-			this->nick(); break;
-		case (USER):
-			this->user(); break;
-		default :
-			return;
-	}	
+	for ( ; type<4; type++) {
+		if (commandTypeStr[type] == cmd)
+			return type;
+	}
 }
 
 void Command::sendReply(std::string replyMsg) {

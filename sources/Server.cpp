@@ -93,6 +93,18 @@ void Server::readMessage(int clientFd) {
 
 void Server::runCommand(int clientFd) {
 	Command command(clients[clientFd], message[clientFd]);
+	int 	type = command.getCommandType();
+
+	switch (type) {
+		case (PASS):
+			command.pass(_pwd);
+		case (NICK):
+			command.nick();
+		case (USER):
+			command.user();
+		default :
+			return;
+	}
 }
 
 
