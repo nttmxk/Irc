@@ -2,10 +2,10 @@
 #include <iostream> // cout
 #include <sys/socket.h> // send
 
-Command::Command()
-	: client(NULL), message("") {}
-Command::Command(const Command& abj) { (void)abj; }
-Command::~Command() {}
+//Command::Command()
+//	: client(NULL), message("") {}
+//Command::Command(const Command& abj) { (void)abj; }
+//Command::~Command() {}
 
 
 Command::Command(Client * _client, const std::string _message) 
@@ -16,19 +16,24 @@ Command::Command(Client * _client, const std::string _message)
 }
 
 void Command::parseMessage() {
-	size_t        prev = 0;
-    size_t        next;
+	size_t		prev = 0;
+    size_t		next;
+	size_t		crlf;
 
     while (this->message[prev])
     {
-        next = this->message.find(' ', prev);
-        if (next == std::string::npos || this->message[prev] == ':')
-        {
-            this->tokens.push_back(this->message.substr(prev));
-            break;
-        }
-        this->tokens.push_back(this->message.substr(prev, next - prev));
-        prev = next + 1;
+		crlf = this->message.find("\r\n", prev);
+		next = this->message.find(' ', prev);
+		if (this->message[prev] == ':' || crlf < next)
+		{
+            this->tokens.push_back(this->message.substr(prev, crlf - prev));
+			prev = crlf + 2;
+		}
+		else
+		{
+			this->tokens.push_back(this->message.substr(prev, next - prev));
+			prev = next + 1;
+		}
     }
 }
 
