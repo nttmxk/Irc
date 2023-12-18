@@ -21,7 +21,7 @@ void Command::parseMessage() {
 
     while (this->message[prev])
     {
-        next = this->message.find_first_of(" ,", prev);
+        next = this->message.find(' ', prev);
         if (next == std::string::npos || this->message[prev] == ':')
         {
             this->tokens.push_back(this->message.substr(prev));
