@@ -57,7 +57,8 @@ void Server::addClient(void) {
 		throw std::runtime_error("Error\nfcntl\n");
 	}
 
-	clients[clientFd] = Client(clientFd);
+	clients[clientFd] = new Client(clientFd);
+//	std::clog << "[Log] " << clientFd << " is connected\n";
 	setPoll(clientFd, clientFd, POLLIN | POLLHUP, 0);
 }
 
@@ -69,8 +70,11 @@ void Server::readMessage(int clientFd) {
 		close(clientFd);
 		throw std::runtime_error("Error\nMessage read size < 0\n");
 	}
+	buffer[readSize] = 0;
+//	std::clog << "Message from " << clientFd << " with rSize: " << readSize << '\n' << buffer << '\n';
 	if (readSize == 0) // when connection is closed, this is not an error right?
 	{
+		std::clog << "[Log] " << clientFd << ": Quit\n";
 		message[clientFd] = "QUIT :<reason>\r\n"; // reason
 		runCommand(clientFd);
 		setPoll(clientFd, -1, 0, 0);

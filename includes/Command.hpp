@@ -25,9 +25,9 @@ private:
 	std::string					message;
 	std::vector<std::string>	tokens;
 
-	Command();
-	Command(const Command& abj);
-	~Command();
+//	Command();
+//	Command(const Command& abj);
+//	~Command();
 
 public:
 	Command(Client * _client, const std::string _message);

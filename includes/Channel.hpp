@@ -7,14 +7,14 @@
 
 class Client;
 
-typedef enum ChannelMode {
+typedef enum {
 	INVITE_ONLY = 'i',	// Set/remove Invite-only channel
 	TOPIC = 't',		// Set/remove the restrictions of the TOPIC command to channel operators
 	KEY = 'k',			// Set/remove the channel key (password)
 	OPER = 'o',			// Give/take channel operator privilege
 	USER_LIMIT = 'l',	// Set/remove the user limit to channel
 	MODE_CNT = 6
-};
+} ChannelMode;
 
 class Channel {
 private:
@@ -57,8 +57,8 @@ public:
 	void	deleteOperator(Client& client);
 
 	/* Modes */
-	void	addMode(ChannelMode& const mode);
-	void	deleteMode(ChannelMode& const mode);
+	void	addMode(const ChannelMode& mode);
+	void	deleteMode(const ChannelMode& mode);
 
 	/* Message Sending */
 	void	sendTo(std::string message, Client& from, std::vector<Client&> to);
