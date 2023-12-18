@@ -11,6 +11,7 @@
 
 # include "Client.hpp"
 # include "Channel.hpp"
+# include "Command.hpp"
 
 # define BUF_LEN 1024
 # define MSG_LEN 2048

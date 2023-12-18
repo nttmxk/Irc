@@ -57,6 +57,7 @@ void Server::addClient(void) {
 		throw std::runtime_error("Error\nfcntl\n");
 	}
 
+	clients[clientFd] = Client(clientFd);
 	setPoll(clientFd, clientFd, POLLIN | POLLHUP, 0);
 }
 
@@ -87,7 +88,7 @@ void Server::readMessage(int clientFd) {
 }
 
 void Server::runCommand(int clientFd) {
-	(void)clientFd;
+	Command command(clients[clientFd], message[clientFd]);
 }
 
 
