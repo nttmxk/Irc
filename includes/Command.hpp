@@ -41,18 +41,8 @@ private:
 	void pass();
 	void nick();
 	void user();
-	void oper();
-
-	/* QUIT [<reason>]
-	 * A client session is terminated with a quit message.  
-	 * The server acknowledges this by sending an ERROR message to the client.
-	 * Example: QUIT :Gone to have lunch 
-				:syrk!kalt@millennium.stealth.net QUIT :Gone to have lunch 
-				; User syrk has quit IRC to have lunch. ( --> Preferred message format )
-	 * client가 서버 접속을 끊음, client가 접속해 있는 모든 채널에서 나감
-	 */
-	void quit(Client& Client, std::string message);
-
+	void oper(std::map<int, Client> clientsInServer);
+	void quit();
 
 /* Channel Operations */
 

@@ -58,7 +58,7 @@ void Command::nick() {
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
-	if (tokens.size() < 1) {
+	if (tokens.size() < 2) {
 		this->sendReply(ERR_NONICKNAMEGIVEN(servername, nick));
 		return;
 	}

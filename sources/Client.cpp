@@ -1,5 +1,6 @@
 #include "../includes/Client.hpp"
 
+
 Client::Client(int _fd) 
 	: client_fd(_fd), 
 	  nickname(""), userName(""), realName(""), 
@@ -50,4 +51,14 @@ bool Client::isAuthorized() const {
 
 void Client::checkAuthorization() {
 	this->_authorized = true;
+}
+
+bool Client::isServerOper() const {
+	return modeStr.find(OPERATOR) != std::string::npos;
+}
+
+void Client::setServerOper() {
+	if (this->isServerOper())
+		return;
+	this->modeStr += 'O';
 }
