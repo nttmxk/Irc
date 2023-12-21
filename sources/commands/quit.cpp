@@ -10,4 +10,10 @@
  */
 void Command::quit() {
 
+	std::string quitMsg = "Quit: ";
+	quitMsg += (tokens.size() == 1) ? "leaving" : tokens[1];
+
+	// 참여한 채널에 quitMsg 보내고 나가기
+
+	// 서버에서 나가기
 }
