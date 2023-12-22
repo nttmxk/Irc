@@ -6,6 +6,8 @@
 
 # include <string>
 # include <vector>
+# include <map>
+# define CRLF "\r\n"
 
 class Channel;
 // typedef enum ChannelMode;
@@ -24,17 +26,26 @@ private:
 	Client*						client;
 	std::string					message;
 	std::vector<std::string>	tokens;
+	int 						messageIndex;
+	int 						messageSize;
 
-	Command();
-	Command(const Command& abj);
-	~Command();
+//	Command();
+//	Command(const Command& abj);
+//	~Command();
 
 public:
 	Command(Client * _client, const std::string _message);
+	int getCommandType();
+	void pass(const std::string pwd);
+	void nick();
+//	void nick(std::map<int, Client*> &clients);
+	void	user();
+	bool	isTokenEnd();
+	bool	isConnectEnd;
+	int		getNumParameter();
 
 private:
 	void parseMessage();
-	void execute(std::string cmd);
 	void sendReply(std::string);
 
 /* Connection Registration  */
