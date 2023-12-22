@@ -29,12 +29,12 @@ static bool isValidNickname(const std::string nickname) {
 }
 
 // 닉네임 중복 확인
-static bool isNicknameAlreadyInUse(const int client_fd, const std::string nickname, const std::map<int, Client> clients) {
-	std::map<int, Client>::const_iterator it = clients.begin();	
+static bool isNicknameAlreadyInUse(const int client_fd, const std::string nickname, const std::map<int, Client*> clients) {
+	std::map<int, Client*>::const_iterator it = clients.begin();	
 	for( ; it != clients.end(); it++) {
 		if (it->first == client_fd)
 			continue;
-		if (it->second.getNickname() == nickname) {
+		if (it->second->getNickname() == nickname) {
 			return true;
 		}
 	}
@@ -54,17 +54,16 @@ static bool isNicknameAlreadyInUse(const int client_fd, const std::string nickna
  * 닉네임 파라미터 못받았을 경우, 431 보낸 후 커멘드 무시
  * 닉네임 변경 성공 시, <old nickname>!<user>@localhost NICK <new nickname> 출력 ex) oldhio!root@127.0.0.1 NICK newhio
  */
-void Command::nick() {
+void Command::nick(std::map<int, Client*> &clients) {
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
-	if (tokens.size() < 1) {
+	if (getNumParameter() < 2) {
 		this->sendReply(ERR_NONICKNAMEGIVEN(servername, nick));
 		return;
 	}
 
-	std::string newNickname = tokens[1];
-	const std::map<int, Client> clients; // = client->server.clientList
+	std::string newNickname = tokens[messageIndex + 1];
 
 	if (newNickname == "") {
 		this->sendReply(ERR_NONICKNAMEGIVEN(servername, nick));

@@ -44,14 +44,14 @@
 */
 void Command::join(std::map<std::string,Channel> channelsInServer) {
 	
-	if (getNumParamters() < 2) {
+	if (getNumParameter() < 2) {
 		// ERR_NEEDMOREPARAMS
 		return;
 	}
 	
 	std::vector<std::string> channels;
 	std::vector<std::string> keys;
-	bool hasKeys = getNumParamters() >= 3;
+	bool hasKeys = getNumParameter() >= 3;
 	
 	channels = splitByComma(tokens[messageIndex + 1]);
 	if (hasKeys)

@@ -14,12 +14,12 @@ void Command::pass(const std::string pwd) {
 	const std::string servername = "irc.local";
 	const std::string nick = this->client->getNickname();
 
-	if (this->tokens.size() < 2) {
+	if (getNumParameter() < 2) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "PASS"));
 		return;
 	}
 
-	std::string password = this->tokens[1];
+	std::string password = this->tokens[messageIndex + 1];
 	if (this->client->isAuthorized()) {
 		this->sendReply(ERR_ALREADYREGISTRED(servername, nick));
 		return;

@@ -36,6 +36,9 @@
 // RPL_ENDOFNAMES (366)			// join
 # define RPL_ENDOFNAMES(servername, nick, channel) \
 	":" + servername + " 366 " + nick + " #" + channel + " :End of /NAMES list\r\n"
+// RPL_YOUREOPER (381)			// oper
+# define RPL_YOUREOPER(servername, nick) \
+	":" + servername + " 381 " + nick + " :You are now an IRC operator\r\n"
 // ERR_NOSUCHNICK (401)			// mode, privmsg
 #define ERR_NOSUCHNICK(servername, nick) \
 	":" + servername + " 401 " + nick + " :No such nick\r\n"
@@ -72,12 +75,15 @@
 // ERR_CHANOPRIVSNEEDED (482)	// topic, invite, kick, mode
 # define ERR_CHANOPRIVSNEEDED(servername, nick, channel) \
 	":" + servername + " 482 " + nick + " #" + channel + " :You must be a channel operator\r\n"
+// ERR_NOOPERHOST (491)			// oper
+# define ERR_NOOPERHOST(servername, nick) \
+	":" + servername + " 491 " + nick + " :No O-lines for your host\r\n"
 
 /*
 RPL_UMODEIS (221)			// mode
 RPL_AWAY (301)				// privmsg
 RPL_CREATIONTIME (329)		// mode
-RPL_YOUREOPER (381)			// oper
+
 ERR_NOSUCHSERVER (402)		// privmsg
 ERR_CANNOTSENDTOCHAN (404)	// privmsg
 ERR_TOOMANYCHANNELS (405)	// join
@@ -107,7 +113,7 @@ ERR_NICKCOLLISION (436)		// nick
 #define ERR_BADCHANMASK(servername, nick) \
 	":" + servername + " 476 * " + nick + " :Bad Channel Mask\n"
 
-ERR_NOOPERHOST (491)		// oper
+
 ERR_UMODEUNKNOWNFLAG (501)	// mode
 // ERR_USERSDONTMATCH (502)	// mode
 #define ERR_USERSDONTMATCH(servername, nick) \

@@ -8,6 +8,7 @@
 # include <string>
 # include <vector>
 # include <map>
+# define CRLF "\r\n"
 
 class Channel;
 // typedef enum ChannelMode;
@@ -36,44 +37,21 @@ private:
 public:
 	Command(Client * _client, const std::string _message);
 	int getCommandType();
-	void pass(const std::string pwd);
-	void nick();
-//	void nick(std::map<int, Client*> &clients);
-	void user();
-	bool isEnd();
+	bool	isTokenEnd();
+	bool	isConnectEnd;
+	int		getNumParameter();
 
 private:
 	void parseMessage();
 	void sendReply(std::string);
 	int	getParamsCnt();
 
-/* Connection Registration  */
-//	void pass();
-//	void nick();
-//	void user();
-
-	/* OPER <name> <password>
-	 * used by a normal user to obtain IRC operator privileges
-	 * Numeric Replies: ERR_NEEDMOREPARAMS (461)
-	 					ERR_PASSWDMISMATCH (464)
-						ERR_NOOPERHOST (491)
-						RPL_YOUREOPER (381)
-	 * password 오류 시, 464 보낸 후 fail 처리
-	 * not connecting from a valid host for the given name, 491 보낸 후 fail 처리
-	 * 성공 시(name, password가 correct, 유효한 host에서 연결 중), 381을 user에게 보냄
-	 */
-	void oper(Client& client, std::string name, std::string password);
-
-	/* QUIT [<reason>]
-	 * A client session is terminated with a quit message.  
-	 * The server acknowledges this by sending an ERROR message to the client.
-	 * Example: QUIT :Gone to have lunch 
-				:syrk!kalt@millennium.stealth.net QUIT :Gone to have lunch 
-				; User syrk has quit IRC to have lunch. ( --> Preferred message format )
-	 * client가 서버 접속을 끊음, client가 접속해 있는 모든 채널에서 나감
-	 */
-	void quit(Client& Client, std::string message);
-
+/* Connection Registration */
+	void pass(const std::string pwd);
+	void nick(std::map<int, Client*> &clients);
+	void user();
+	void oper(std::map<int, Client> clientsInServer);
+	void quit();
 
 /* Channel Operations */
 	void join(std::map<std::string,Channel> channelsInServer);
