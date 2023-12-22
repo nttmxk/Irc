@@ -24,6 +24,43 @@
 * Message Examples:
 *	- :dan-!d@localhost PART #test    ; dan-이 채널 #test를 나감.
 */
-void Command::part() {
+void Command::part(std::map<std::string, Channel*> channelsInServer) {
+    std::string servername = "irc.local";
+	std::string nick = client->getNickname();
+
+	if (getNumParameter() < 2) {
+		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "PART"));
+		return;
+	}
+	
+	std::vector<std::string> channels = splitByComma(tokens[messageIndex + 1]);
+	std::string reason = (getNumParameter() > 2) ? tokens[messageIndex + 2] : "";
+	messageIndex += getNumParameter();
+
+    std::vector<std::string>::iterator it = channels.begin();
+    for ( ; it != channels.end(); it++) {
+        std::string targetChannel = *it;
+
+        // 타겟 채널이 서버에 존재하는지 확인
+        Channel* channelPtr = isChannelExist(channelsInServer, targetChannel);
+        if (channelPtr == NULL) {
+            sendReply(ERR_NOSUCHCHANNEL(servername, nick, targetChannel));
+            return;
+        }
+
+        // 클라이언트가 타겟 채널에 참여하고 있는지 확인
+        if (channelPtr->isInChannel(nick) == false) {
+            sendReply(ERR_NOTONCHANNEL(servername, nick, targetChannel));
+            return;
+        }
+
+        // do part
+        std::string partMsg = USER_ADDR(nick, client->getUserName(), "127.0.0.1") \
+                                + " invite " + targetChannel = "\r\n";
+        // 채널로 이 메세지 보내야함
+        channelPtr->deleteMember(nick);
+        
+    }
 
 }
+

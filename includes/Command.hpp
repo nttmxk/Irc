@@ -45,6 +45,8 @@ private:
 	void parseMessage();
 	void sendReply(std::string);
 	int	getParamsCnt();
+	std::vector<std::string> splitByComma(std::string str);
+	Channel* isChannelExist(std::map<std::string,Channel*> channelsInServer, std::string channelName);
 
 /* Connection Registration */
 	void pass(const std::string pwd);
@@ -55,7 +57,7 @@ private:
 
 /* Channel Operations */
 	void join(std::map<std::string,Channel*> channelsInServer);
-	void part();
+	void part(std::map<std::string, Channel*> channelsInServer);
 	void topic();
 	void invite(std::map<std::string,Channel*> channelsInServer);
 	void kick(std::map<std::string, Channel*> channelsInServer);

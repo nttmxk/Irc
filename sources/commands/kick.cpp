@@ -81,27 +81,3 @@ void Command::kick(std::map<std::string, Channel*> channelsInServer) {
         channelPtr->deleteMember(targetNick);
     }
 }
-
-// ',' 기준으로 채널 split
-static std::vector<std::string> splitByComma(std::string str) {
-	std::vector<std::string> ret;
-
-	std::size_t pos = 0;
-	while (pos != std::string::npos) {
-		std::size_t tmpPos = str.find(',', pos);
-		int count = (tmpPos == std::string::npos) ? str.size() - pos : tmpPos - pos;
-		ret.push_back(str.substr(pos, count));
-		pos = (tmpPos == std::string::npos) ? tmpPos : tmpPos + 1;
-	}
-	
-	return ret;
-}
-
-static Channel* isChannelExist(std::map<std::string,Channel*> channelsInServer, std::string channelName) {
-	std::map<std::string,Channel*>::iterator channel;
-
-	channel = channelsInServer.find(channelName);
-	if (channel == channelsInServer.end())
-		return NULL;
-	return channel->second;
-}

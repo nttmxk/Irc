@@ -65,12 +65,3 @@ void Command::invite(std::map<std::string, Channel*> channelsInServer) {
     // 이걸 targetNick에거 보내야함
 
 }
-
-static Channel* isChannelExist(std::map<std::string,Channel*> channelsInServer, std::string channelName) {
-	std::map<std::string,Channel*>::iterator channel;
-
-	channel = channelsInServer.find(channelName);
-	if (channel == channelsInServer.end())
-		return NULL;
-	return channel->second;
-}

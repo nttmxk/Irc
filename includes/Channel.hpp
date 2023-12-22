@@ -59,7 +59,7 @@ public:
 	/* Member */
 	bool	isInChannel(const std::string& clientNickname) const;
 	void	addMember(Client& client);
-	void	deleteMember(const std::string& clientNickname);
+	void	deleteMember(const std::string& clientNickname); // 멤버가 operator인 경우 deleteOperator 실행해줘야함.
 	bool	isFull();
 
 	/* Operator */
