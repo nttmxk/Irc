@@ -17,22 +17,22 @@
 
 // RPL_CHANNELMODEIS (324)		// mode
 # define RPL_CHANNELMODEIS(servername, nick, channel, modes) \
-	":" + servername + " 324 " + nick + " #" + channel + " :+" + modes + "\r\n"
+	":" + servername + " 324 " + nick + " " + channel + " :+" + modes + "\r\n"
 // RPL_NOTOPIC (331)			// topic
 # define RPL_NOTOPIC(servername, nick, channel) \
-	":" + servername + " 331 " + nick + " #" + channel + " :No topic is set\r\n"
+	":" + servername + " 331 " + nick + " " + channel + " :No topic is set\r\n"
 // RPL_TOPIC (332)				// join, topic
 # define RPL_TOPIC(servername, nick, channel, topic) \
-	":" + servername + " 332 " + nick + " #" + channel + " :" + topic + "\r\n"
+	":" + servername + " 332 " + nick + " " + channel + " :" + topic + "\r\n"
 // RPL_TOPICWHOTIME (333)		// join, topic
 # define RPL_TOPICWHOTIME(servername, nick, channel, userAddr, time) \
-	":" + servername + " 333 " + nick + " #" + channel + " " + userAddr + " :" + time + "\r\n"
+	":" + servername + " 333 " + nick + " " + channel + " " + userAddr + " :" + time + "\r\n"
 // RPL_INVITING (341)			// invite
 # define RPL_INVITING(servername, nick, channel, targetUser) \
 	":" + servername + " 341 " + nick + " " + targetUser + " :#" + channel + "\r\n"
 // RPL_NAMREPLY (353)			// join
-# define RPL_NAMREPLY(servername, nick, symbol, channel, users) \
-	":" + servername + " 353 " + nick + " = #" + channel + " :" + users + "\r\n"
+# define RPL_NAMREPLY(servername, nick, channel, users) \
+	":" + servername + " 353 " + nick + " = " + channel + " :" + users + "\r\n"
 // RPL_ENDOFNAMES (366)			// join
 # define RPL_ENDOFNAMES(servername, nick, channel) \
 	":" + servername + " 366 " + nick + " #" + channel + " :End of /NAMES list\r\n"
@@ -44,7 +44,7 @@
 	":" + servername + " 401 " + nick + " :No such nick\r\n"
 // ERR_NOSUCHCHANNEL (403)		// join, part, topic, invite, kick, mode
 # define ERR_NOSUCHCHANNEL(servername, nick, channel) \
-	":" + servername + " 403 " + nick + " #" + channel + " :No such channel\r\n"
+	":" + servername + " 403 " + nick + " " + channel + " :No such channel\r\n"
 // ERR_NONICKNAMEGIVEN (431)	// nick
 # define ERR_NONICKNAMEGIVEN(servername, nick) \
 	":" + servername + " 432 " + nick + " :No nickname given\r\n"

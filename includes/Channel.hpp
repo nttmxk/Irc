@@ -33,12 +33,15 @@ private:
 	// 참여가능한 멤버 수 제한
 	int memberLimit;
 	// 채널에 속해 있는 모든 멤버 리스트, key: nickname (fd로 수정할 수도...?)
-	std::map<std::string, Client*>	members;
+	std::map<std::string, Client&>	members;
 	// 운영자(operator) 리스트
 	std::vector<std::string>	operators;
 	// 운영자가 아닌 보통 멤버 리스트
 	std::vector<std::string>	normalMembers;
+	// 초대 보낸 유저 리스트
+	std::vector<std::string>	invitedUsers;
 
+	Channel();
 
 public:
 	Channel(std::string const &name);
@@ -48,26 +51,30 @@ public:
 	std::string						getName();
 	std::string						getKey();	
 	std::string						getTopic();
-	// std::string						getMode();
-	const int						getMemberLimit();
-	std::map <std::string, Client>	getMembers();
-	std::vector<std::string>		getOperators();
-	std::vector<std::string>		getNormalMembers();
+	// const int						getMemberLimit();
+	// std::map <std::string, Client&>	getMembers();
+	// std::vector<std::string>		getOperators();
+	// std::vector<std::string>		getNormalMembers();
 
 	/* Setter */
 	void	setTopic(std::string newTopic);
 	void	setKey(std::string newKey);
 	
 	/* Member */
-	bool	isInChannel(const std::string& clientNickname) const;
+	bool	isInChannel(const std::string targetNick) const;
 	void	addMember(Client& client);
-	void	deleteMember(const std::string& clientNickname); // 멤버가 operator인 경우 deleteOperator 실행해줘야함.
+	void	deleteMember(const std::string targetNick); // 멤버가 operator인 경우 deleteOperator 실행해줘야함.
 	bool	isFull();
 
+	bool	isInvitedMember(const std::string targetNick);
+	void	addInvitedMember(Client& client);
+
+	std::string getMemberStr();
+
 	/* Operator */
-	bool	isOperator(const std::string& clientNickname) const;
+	bool	isOperator(const std::string targetNick) const;
 	void	addOperator(Client& client);
-	void	deleteOperator(const std::string& clientNickname);
+	void	deleteOperator(const std::string targetNick);
 
 	/* Modes */
 	void	onMode(const ChannelMode& mode);

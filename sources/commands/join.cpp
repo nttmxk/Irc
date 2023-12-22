@@ -47,7 +47,6 @@ void Command::join(std::map<std::string,Channel*> channelsInServer) {
 	std::string nick = client->getNickname();
 
 	if (getNumParameter() < 2) {
-		// ERR_NEEDMOREPARAMS
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "JOIN"));
 		return;
 	}
@@ -66,7 +65,9 @@ void Command::join(std::map<std::string,Channel*> channelsInServer) {
 		// 채널이 서버에 존재하는지 확인, 없으면 새로 생성
 		Channel* channelPtr = isChannelExist(channelsInServer, channels[i]);
 		if (channelPtr == NULL) {
-			// create channel
+			Channel* newChannel = new Channel(channels[i]);
+			channelsInServer.insert(make_pair(channels[i], newChannel));
+			channelPtr = newChannel;
 		}
 
 		// 채널에 key가 설정되어 있다면, 입력받은 key와 일치하는지 확인
@@ -89,34 +90,38 @@ void Command::join(std::map<std::string,Channel*> channelsInServer) {
 		}
 
 		// 초대 전용 채널인지 확인
-		if (channelPtr->isModeOn('i')) {
+		if (channelPtr->isModeOn('i') && channelPtr->isInvitedMember(nick) == false) {
 			sendReply(ERR_INVITEONLYCHAN(servername, nick, channelPtr->getName()));
 			return;
 		}
 	
 	
 		// join channel
-		channelPtr->addMember(*client);
+		channelPtr->isInvitedMember(nick) ? 
+			channelPtr->addInvitedMember(*client) : channelPtr->addMember(*client);
 
 		// 1. Join Msg -> 채널로 보내는 건가..?
 		std::string joinMsg = USER_ADDR(nick, client->getUserName(), "127.0.0.1") \
 								+ " has joined " + channelPtr->getName() + "\r\n";
 		// 2. 참여한 채널에 토픽이 잇으면 RPL_TOPIC (332)
 		sendReply(RPL_TOPIC(servername, nick, channelPtr->getName(), channelPtr->getTopic()));
-		// 3. 현재 채널에 참여한 사용자 목록 - RPL_NAMREPLY (353) * 채널 참여자 수 + RPL_ENDOFNAMES (366)
-		std::string memberListStr = "";
-		std::vector<std::string>::iterator it; 
-		std::vector<std::string>::iterator end_it; 
+		// 3. 현재 채널에 참여한 사용자 목록 - RPL_NAMREPLY (353) + RPL_ENDOFNAMES (366)
+		std::string memberListStr = channelPtr->getMemberStr();
+		sendReply(RPL_NAMREPLY(servername, nick, channelPtr->getName(), memberListStr));
+		sendReply(RPL_ENDOFNAMES(servername, nick, channelPtr->getName()));
 
-		it = channelPtr->getOperators().begin();
-		end_it = channelPtr->getOperators().end();
-		for ( ; it != end_it; it++) 
-			memberListStr += ("@" + *it + " ");
+		// std::vector<std::string>::iterator it; 
+		// std::vector<std::string>::iterator end_it; 
 
-		it = channelPtr->getNormalMembers().begin(); 
-		end_it = channelPtr->getNormalMembers().end();
-		for ( ; it != end_it; it++) 
-			memberListStr += (*it + " ");
+		// it = channelPtr->getOperators().begin();
+		// end_it = channelPtr->getOperators().end();
+		// for ( ; it != end_it; it++) 
+		// 	memberListStr += ("@" + *it + " ");
+
+		// it = channelPtr->getNormalMembers().begin(); 
+		// end_it = channelPtr->getNormalMembers().end();
+		// for ( ; it != end_it; it++) 
+		// 	memberListStr += (*it + " ");
 	}
 }
 
