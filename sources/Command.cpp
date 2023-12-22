@@ -35,12 +35,12 @@ void Command::parseMessage() {
 			prev = next + 1;
 		}
     }
-	messageSize = tokens.size();
+	tokenSize = tokens.size();
 }
 
 int Command::getCommandType()
 {
-	std::string cmd = tokens[messageIndex++];
+	std::string cmd = tokens[messageIndex];
 	int type = 0;
 
 	for ( ; type < 3; type++) {
@@ -60,9 +60,14 @@ void Command::sendReply(std::string replyMsg) {
 
 bool Command::isTokenEnd()
 {
-	if (messageIndex < messageSize)
+	if (messageIndex < tokenSize)
 		return false;
 	return true;
+}
+
+void Command::passCommand()
+{
+	messageIndex += getNumParameter() + 1;
 }
 
 int Command::getNumParameter()

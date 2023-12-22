@@ -8,6 +8,7 @@
 # include <string>
 # include <vector>
 # include <map>
+# include <iostream> // for testing
 # define CRLF "\r\n"
 
 class Channel;
@@ -28,7 +29,7 @@ private:
 	std::string					message;
 	std::vector<std::string>	tokens;
 	int 						messageIndex;
-	int 						messageSize;
+	int 						tokenSize;
 
 //	Command();
 //	Command(const Command& abj);
@@ -36,10 +37,11 @@ private:
 
 public:
 	Command(Client * _client, const std::string _message);
-	int getCommandType();
+	int		getCommandType();
 	bool	isTokenEnd();
 	bool	isConnectEnd;
 	int		getNumParameter();
+	void	passCommand();
 
 private:
 	void parseMessage();
@@ -48,12 +50,15 @@ private:
 	std::vector<std::string> splitByComma(std::string str);
 	Channel* isChannelExist(std::map<std::string,Channel*> channelsInServer, std::string channelName);
 
+public:
+
 /* Connection Registration */
 	void pass(const std::string pwd);
 	void nick(std::map<int, Client*> &clients);
-	void user();
-	void oper(std::map<int, Client> clientsInServer);
+	void user(std::string time);
+	void oper(std::map<int, Client> clientsInServer, const std::string pwd);
 	void quit();
+
 
 /* Channel Operations */
 	void join(std::map<std::string,Channel*> channelsInServer);

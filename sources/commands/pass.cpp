@@ -10,21 +10,31 @@
  * 서버에서 예상한 비밀번호가 아니면, (464)를 보낸 후 ERROR와 함께 연결 닫기
  */
 void Command::pass(const std::string pwd) {
-
+	int numParam = getNumParameter();
 	const std::string servername = "irc.local";
 	const std::string nick = this->client->getNickname();
 
-	if (getNumParameter() < 2) {
-		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "PASS"));
-		return;
+	std::clog << "Parse Test\n";
+	for (int i = 0; i < tokenSize; ++i) {
+		std::clog << i << ":" << tokens[i] << '\n';
 	}
 
 	std::string password = this->tokens[messageIndex + 1];
+	messageIndex += numParam + 1;
+	std::clog << "[Log] pass:" << password << '\n';
+
+	if (numParam < 2) {
+		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "PASS"));
+		isConnectEnd = true;
+		return;
+	}
+
 	if (this->client->isAuthorized()) {
 		this->sendReply(ERR_ALREADYREGISTRED(servername, nick));
 		return;
 	} else if (pwd != password) {
 		this->sendReply(ERR_PASSWDMISMATCH(servername, nick));
+		isConnectEnd = true;
 		return;
 	}
 } 

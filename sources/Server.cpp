@@ -10,6 +10,7 @@ Server::Server(int portNum, std::string pwd) {
 	serverAddress.sin_addr.s_addr = INADDR_ANY;
 
 	if (bind(serverFd, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) == -1) {
+		std::cerr << "Socket bind err\n";
 		close(serverFd);
 		exit(1);
 	}
@@ -17,10 +18,13 @@ Server::Server(int portNum, std::string pwd) {
 		close(serverFd);
 		exit(1);
 	}
-	/*log*/ std::clog << "ServerFD : " << serverFd << '\n';
+	std::clog << "ServerFD : " << serverFd << " is created\n";
 	for (int i = 0; i < USER_MAX + 4; ++i) {
 		setPoll(i, -1, 0, 0);
 	}
+	time_t t;
+	time(&t);
+	startTime = ctime(&t);
 	setPoll(serverFd, serverFd, POLLIN, 0);
 }
 
@@ -62,31 +66,37 @@ void Server::addClient(void) {
 	setPoll(clientFd, clientFd, POLLIN | POLLHUP, 0);
 }
 
+void Server::deleteClient(int clientFd) {
+	setPoll(clientFd, -1, 0, 0);
+	message.erase(clientFd);
+	// QUIT channels before delete clients.
+	clients.erase(clientFd);
+	close(clientFd);
+}
+
 void Server::readMessage(int clientFd) {
 	int readSize = recv(clientFd, buffer, BUF_LEN - 1, MSG_DONTWAIT);
 
 	if (readSize < 0) {
-		setPoll(clientFd, -1, 0, 0);
-		close(clientFd);
+		deleteClient(clientFd);
 		throw std::runtime_error("Error\nMessage read size < 0\n");
 	}
 	buffer[readSize] = 0;
 //	std::clog << "Message from " << clientFd << " with rSize: " << readSize << '\n' << buffer << '\n';
-	if (readSize == 0) // when connection is closed, this is not an error right?
+	if (readSize == 0)
 	{
 		std::clog << "[Log] " << clientFd << ": Quit\n";
-		message[clientFd] = "QUIT :<reason>\r\n"; // reason
+		message[clientFd] = "QUIT :disconnected\r\n";
 		runCommand(clientFd);
-		setPoll(clientFd, -1, 0, 0);
-		close(clientFd);
+		deleteClient(clientFd);
 	}
 	else if (readSize > 1 && buffer[readSize - 2] == '\r' && buffer[readSize - 1] == '\n')
 	{
 		message[clientFd].append(buffer);
+		std::clog << "[Log] " << clientFd << ": \n" << message[clientFd] << '\n';
 		runCommand(clientFd);
 		message[clientFd].clear();
 		// when runCommand executes <QUIT>... then setPoll and close should be called here too?
-		// message flush
 	}
 	else // Ctrl + D handling
 		message[clientFd].append(buffer);
@@ -95,6 +105,7 @@ void Server::readMessage(int clientFd) {
 void Server::runCommand(int clientFd) {
 	Command command(clients[clientFd], message[clientFd]);
 	int 	type;
+	bool	noCommand = false;
 
 	while (!command.isTokenEnd()) {
 		type = command.getCommandType();
@@ -103,20 +114,42 @@ void Server::runCommand(int clientFd) {
 				command.pass(_pwd);
 				break;
 			case (NICK):
-				command.nick();
+				command.nick(clients);
 				break;
 			case (USER):
-				command.user();
+				command.user(startTime);
 				break;
 			default :
-				break;
+				noCommand = true;
+		}
+		if (noCommand) {
+			std::clog << "[Log] :No Command!\n";
+			command.passCommand();
+			noCommand = false;
 		}
 		if (command.isConnectEnd)
-		{
-			// disconnect routine
-		}
+			deleteClient(clientFd);
 	}
 }
 
-
-Server::~Server() {}
+Server::~Server() {
+	std::map<int, Client*>::iterator it = clients.begin();
+	while (it != clients.end())
+	{
+		close(it->first);
+		delete it->second;
+		it->second = nullptr;
+		++it;
+	}
+//	std::map<std::string, Channel*>::iterator it2 = channels.begin();
+//	while (it2 != channels.end())
+//	{
+//		delete it2->second;
+//		it2->second = nullptr;
+//		++it2;
+//	}
+	clients.clear();
+	message.clear();
+//	channels.clear();
+	close(serverFd);
+}
