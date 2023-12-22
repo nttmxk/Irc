@@ -35,7 +35,7 @@ void Command::parseMessage() {
 			prev = next + 1;
 		}
     }
-	messageSize = tokens.size();
+	tokenSize = tokens.size();
 }
 
 int Command::getCommandType()
@@ -60,7 +60,7 @@ void Command::sendReply(std::string replyMsg) {
 
 bool Command::isTokenEnd()
 {
-	if (messageIndex < messageSize)
+	if (messageIndex < tokenSize)
 		return false;
 	return true;
 }

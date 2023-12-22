@@ -27,7 +27,7 @@ private:
 	std::string					message;
 	std::vector<std::string>	tokens;
 	int 						messageIndex;
-	int 						messageSize;
+	int 						tokenSize;
 
 //	Command();
 //	Command(const Command& abj);
