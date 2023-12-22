@@ -42,9 +42,9 @@
 *	- :WiZ JOIN #Twilight_zone        ; WiZ가 채널 #Twilight_zone에 참여.
 *	- :dan-!d@localhost JOIN #test    ; dan-이 채널 #test에 참여.
 */
-void Command::join(std::vector<Channel> channelsInServer) {
+void Command::join(std::map<std::string,Channel> channelsInServer) {
 	
-	if (tokens.size() < 2) {
+	if (getParamsCnt() < 2) {
 		// ERR_NEEDMOREPARAMS
 		return;
 	}
@@ -65,34 +65,28 @@ void Command::join(std::vector<Channel> channelsInServer) {
 			// create channel
 		}
 
-		// 채널 key 가 맞는지 확인
-		std::string keyOfChannel = channelPtr->getKey();
-		if (keyOfChannel != "") {
+		// 채널에 key가 설정되어 있다면, 입력받은 key와 일치하는지 확인
+		if (channelPtr->hasMode('k')) {
+			std::string keyOfChannel = channelPtr->getKey();
 			if (i >= keys.size()) {
-				// error reply 475
+				// ERR_BADCHANNELKEY (475)
 			}
 			else if (keys[i] != keyOfChannel) {
-				// error reply 475
+				// ERR_BADCHANNELKEY (475)
 			}
 		}
 
-		
+		if (channelPtr->isFull()) {
+			// ERR_CHANNELISFULL (471)
+		}
+
+		// 초대 전용 채널인지 확인
+		if (channelPtr->hasMode('i')) {
+			// ERR_INVITEONLYCHAN (473)
+		}
+
 	}
-	/* 로직
-		- is valid channel name
-			- if no -> loop break.. ? or continue
-		- is channel full
-			- if yes -> error reply 471
-		- is invite-only channel
-			- if yes -> error reply 473
-		- join channel
-	*/
-	/* 예외 상황
-		- 해당 채널이 없는 경우 => 채널 만들어서 입장
-		- 채널 키가 있는데 입력받은 키와 맞지 않은 경우 => ERR_BADCHANNELKEY (475)
-		- 채널에 참여가능한 user limit을 초과한 경우 => ERR_CHANNELISFULL (471)
-		- 초대 전용 채널에 참여하려고 한 경우 => ERR_INVITEONLYCHAN (473)
-	*/
+	// join channel
 	
 	// 성공한 경우
 	// 1. Join Msg -> 채널로 보내는 건가..?
@@ -121,18 +115,14 @@ static std::string getValidChannelName(std::string channel) {
 	return channel;
 }
 
-static Channel* isChannelExist(std::vector<Channel> channelsInServer, std::string channelName) {
-	std::vector<Channel>::iterator it = channelsInServer.begin();
-	for ( ; it != channelsInServer.end(); it++) {
-		if (channelName == it->getName())
-			return &(*it);
-	}
-	return NULL;
+static Channel* isChannelExist(std::map<std::string,Channel> channelsInServer, std::string channelName) {
+	std::map<std::string,Channel>::iterator channel;
+
+	channel = channelsInServer.find(channelName);
+	if (channel == channelsInServer.end())
+		return NULL;
+	return &(channel->second);
 }
-
-
-
-
 
 
 

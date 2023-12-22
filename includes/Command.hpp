@@ -45,6 +45,7 @@ public:
 private:
 	void parseMessage();
 	void sendReply(std::string);
+	int	getParamsCnt();
 
 /* Connection Registration  */
 //	void pass();
@@ -75,115 +76,11 @@ private:
 
 
 /* Channel Operations */
-	void join();
-
-	/* PART <channel>{,<channel>} [<reason>]
-	 * client가 channel을 나감, 주어진 channel의 활성멤버 목록에서 client를 지움
-	 * - <channel>: 클라이언트를 제거할 채널. 여러 채널에서 동시에 나갈 수 있으며 콤마(,)로 구분
-	 * - [<reason>]: 클라이언트가 채널에서 나간 이유. 생략 가능. 
-	 * 
-	 * 성공적인 PART 명령을 전송하면 사용자는 제거된 각 채널에 대해 서버로부터 PART 메시지를 받게 된다. <reason>은 클라이언트가 채널에서 나간 이유를 나타낸다.
-	 * This message may be sent from a server to a client to notify the client that someone has been removed from a channel. 
-	 * In this case, the message <source> will be the client who is being removed, 
-	 * and <channel> will be the channel which that client has been removed from. 
-	 * Servers SHOULD NOT send multiple channels in this message to clients, 
-	 * and SHOULD distribute these multiple-channel PART messages as a series of messages with a single channel name on each. 
-	 * If a PART message is distributed in this way, <reason> (if it exists) should be on each of these messages.
- 	 * 
-	 * Numeric Replies:
-	 *	- ERR_NEEDMOREPARAMS (461): 필요한 매개변수가 부족하여 명령어를 처리할 수 없음.
-	 *	- ERR_NOSUCHCHANNEL (403): 지정된 채널이 존재하지 않아 실패함.
-	 *	- ERR_NOTONCHANNEL (442): 클라이언트가 채널에 참여하지 않아 실패함. (채널은 존재함)
-	 * 
-	 * 커멘드 사용 예시 
-	 *	- PART #twilight_zone             ; 채널 "#twilight_zone"을 나감.
-	 *	- PART #oz-ops,&group5            ; 채널 "&group5"와 "#oz-ops"를 동시에 나감.
-	 * Message Examples:
-	 *	- :dan-!d@localhost PART #test    ; dan-이 채널 #test를 나감.
-	*/
-	void part(Client& client, Channel& channel, std::vector<std::string> reasons) const;
-
-	/* TOPIC <channel> [<topic>]
- 	 * 주어진 채널의 토픽을 변경하거나 확인 
-	 * - <channel>: 토픽을 변경하거나 확인할 채널의 이름이다.
-	 * - [<topic>]: 변경할 새로운 토픽 내용이다. 생략 가능, 빈 문자열 가능
-	 * topic이 없으면 (332) 또는 (331) 중 하나가 반환 		ex) TOPIC #test  
-	 * topic이 있으면 channel의 토픽을 topic으로 변경		ex)	TOPIC #test :another topic      
-	 * topic이 있으나 빈 문자열이면, channel의 토픽을 제거	  ex) TOPIC #test :
-	 * 
-	 * - 만약 이 명령을 보내는 클라이언트가 (332) 을 받는 경우, 해당 클라이언트에게 (333) 도 보내야 함
-	 * - 채널의 토픽이 변경되거나 지워지면 해당 채널에 있는 모든 클라이언트(토픽 변경자 포함)는 새로운 토픽을 인수로 하는 TOPIC 명령을 수신하게 된다(또는 토픽이 지워진 경우 빈 인수). 
-	 * 	 이를 통해 토픽이 어떻게 변경되었는지 알릴 수 있다.
-	 * - 나중에 채널에 참여하는 클라이언트는 (332) 숫자를 받게 되며 이에 따라 토픽이 표시된다(또는 토픽이 없는 경우 표시되지 않음).
-	 * 
-	 * Numeric Replies:
-	 *	- ERR_NEEDMOREPARAMS (461): 필요한 매개변수가 부족하여 명령어를 처리할 수 없음.
-	 *	- ERR_NOSUCHCHANNEL (403): 지정된 채널이 존재하지 않아 실패함.
-	 *	- ERR_NOTONCHANNEL (442): 클라이언트가 채널에 참여하지 않아 실패함.
-	 *	- ERR_CHANOPRIVSNEEDED (482): 채널에 보호된 토픽 모드가 설정되어 있고 클라이언트가 적절한 채널 권한이 없어 실패함.
-	 *	- RPL_NOTOPIC (331): 해당 채널에 토픽이 없어 실패함(주어진 경우).
-	 *	- RPL_TOPIC (332): 채널의 토픽이 성공적으로 전송됨(주어진 경우).
-	 *	- RPL_TOPICWHOTIME (333): 채널 토픽의 변경자와 변경 시간을 성공적으로 전송함(주어진 경우).
-	 * 커멘드 사용 예시 
-	 *	- TOPIC #test :New topic          ; "#test" 채널의 토픽을 "New topic"으로 설정.
-	 *	- TOPIC #test :                   ; "#test" 채널의 토픽을 지움.
-	 *	- TOPIC #test                     ; "#test" 채널의 토픽을 확인.
-	 */
-	void topic(Channel& channel, std::string newTopic, bool hasTopic) const;
-
-	/* INVITE <nickname> <channel>
-	 * 사용자를 채널로 초대 
-	 * - <nickname>: 채널로 초대할 사용자의 닉네임
-	 * - <channel>: 사용자를 초대할 대상 채널의 이름
-	 * 
-	 * 초대가 성공하면 서버는 명령을 실행한 사용자에게 (341) 숫자를 보내고, 
-	 * 대상 사용자에게는 <source>로 명령을 실행한 사용자가 있는 INVITE 메시지를 보내야 한다. 다른 채널 멤버에게는 알림을 보내면 안 된다.
-	 * 
-	 * Numeric Replies:
-	 *	- RPL_INVITING (341): 초대가 성공적으로 전송됨.
-	 *	- ERR_NEEDMOREPARAMS (461): 필요한 매개변수가 부족하여 명령어를 처리할 수 없음.
-	 *	- ERR_NOSUCHCHANNEL (403): 대상 채널이 존재하지 않아 실패함. 채널에 적어도 한 명의 클라이언트가 있어야 함
-	 *	- ERR_NOTONCHANNEL (442): 초대를 보낸 클라이언트가 채널에 참여하지 않아 실패함.
-	 *	- ERR_CHANOPRIVSNEEDED (482): 채널이 초대 전용 모드로 설정되어 있고 클라이언트가 적절한 채널 권한이 없어 실패함.
-	 *	- ERR_USERONCHANNEL (443): 초대받은 사용자가 이미 대상 채널에 있어 실패함.
-	 * 커멘드 사용 예시 
-	 *	- INVITE Wiz #foo_bar    ; Wiz를 #foo_bar 채널로 초대.
-	 * Message Examples:
-	 *	- :dan-!d@localhost INVITE Wiz #test    ; dan-이 Wiz를 #test 채널로 초대함.
-	 */
-	void invite(Channel& channel, Client& target) const;
-
-	// channel에서 client를 강제퇴장
-	/* KICK <channel> <user> *( "," <user> ) [<comment>]
-	 * <user>를 <channel>에서 강제제거 (강제퇴장). 
-	 * 만약 주석이 주어지지 않으면 서버는 대신 기본 메시지를 사용해야 한다.
-	 * - <channel>: 사용자를 강제로 제거할 채널
-	 * - <user>: 강제로 제거될 사용자의 닉네임
-	 * - *( "," <user> ): 추가적인 사용자를 나열하는데 사용됨
-	 * - [<comment>]: 강제로 제거의 이유를 설명하는 주석. 생략가능
-	 * 
-	 * - 서버는 KICK 메시지를 여러 사용자에게 보내서는 안 된다. 이는 기존 클라이언트 소프트웨어와의 하위 호환성을 유지하기 위해 필요하다.
-	 * - 서버는 RPL_ISUPPORT 의 TARGMAX 매개변수를 통해 KICK 명령당 대상 사용자 수를 제한할 수 있으며, 대상 수가 제한을 초과하는 경우 무시해야 한다.
-	 * 
-	 * Numeric Replies:
-	 *	- ERR_NEEDMOREPARAMS (461): 필요한 매개변수가 부족하여 명령어를 처리할 수 없음.
-	 *	- ERR_NOSUCHCHANNEL (403): 대상 채널이 존재하지 않아 실패함.
-	 *	- ERR_CHANOPRIVSNEEDED (482): 클라이언트가 적절한 채널 권한이 없어 실패함.
-	 *	- ERR_USERNOTINCHANNEL (441): 대상 사용자가 채널에 존재하지 않아 실패함.
-	 *	- ERR_NOTONCHANNEL (442): 클라이언트가 지정된 채널에 참여하지 않아 실패함.
-	 * Deprecated Numeric Reply:
-	 *	- ERR_BADCHANMASK (476): 사용되지 않는 Deprecated 숫자 응답.
-	 * 
-	 * Examples:
-	 *	- KICK #Finnish Matthew        			; #Finnish에서 Matthew를 강제로 제거하는 명령어
-	 *	- KICK &Melbourne Matthew     		    ; &Melbourne에서 Matthew를 강제로 제거하는 명령어
-	 *	- KICK #Finnish John :Speaking English	; #Finnish에서 John을 "Speaking English"을 이유(주석)로 강제로 제거하는 명령어
-	 * Message Examples:
-	 *	- :WiZ!jto@tolsun.oulu.fi KICK #Finnish John
-	 *									; WiZ가 채널 #Finnish에서 John을 제거하도록 하는 KICK 메시지
-	 */
-
-	void kick(Channel& channel, std::vector<Client&> users) const;
+	void join(std::map<std::string,Channel> channelsInServer);
+	void part();
+	void topic();
+	void invite();
+	void kick();
 
 /* Server Queries and Commands */
 	// https://modern.ircdocs.horse/#mode-message 내용이 너무 많아서... 링크 달아둘게요

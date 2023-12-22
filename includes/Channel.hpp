@@ -26,8 +26,10 @@ private:
 	// 채널 토픽
 	std::string	topic;
 	// 채널 모드
-	std::string	mode;
+	std::string	modeString;
 
+	// 참여가능한 멤버 수 제한
+	int memberLimit;
 	// 채널에 속해 있는 모든 멤버 리스트, key: nickname (fd로 수정할 수도...?)
 	std::map<std::string, Client&>	members;
 	// 운영자(operator) 리스트
@@ -42,17 +44,20 @@ public:
 	std::string						getName();
 	std::string						getKey();	
 	std::string						getTopic();
-	std::string						getMode();
+	// std::string						getMode();
+	const int						getMemberLimit();
 	std::map <std::string, Client>	getMembers();
 	std::vector<std::string>		getOperators();
 
 	/* Setter */
 	void	setTopic(std::string& newTopic);
+	void	setKey(std::string& newKey);
 	
 	/* Member */
 	bool	isInChannel(const std::string& clientNickname) const;
 	void	addMember(Client& client);
 	void	deleteMember(Client& client);
+	bool	isFull();
 
 	/* Operator */
 	bool	isOperator(const std::string& clientNickname) const;
@@ -62,6 +67,7 @@ public:
 	/* Modes */
 	void	addMode(const ChannelMode& mode);
 	void	deleteMode(const ChannelMode& mode);
+	bool	hasMode(const char mode);
 
 	/* Message Sending */
 	void	sendTo(std::string message, Client& from, std::vector<Client&> to);
