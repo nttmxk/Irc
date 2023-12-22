@@ -38,13 +38,12 @@ private:
 	std::vector<std::string>	operators;
 	// 운영자가 아닌 보통 멤버 리스트
 	std::vector<std::string>	normalMembers;
-	// 초대 보낸 유저 리스트
 	std::vector<std::string>	invitedUsers;
 
 	Channel();
 
 public:
-	Channel(std::string const &name);
+	Channel(std::string const &name, Client& creator);
 	~Channel();
 
 	/* Getter */
@@ -62,7 +61,7 @@ public:
 	
 	/* Member */
 	bool	isInChannel(const std::string targetNick) const;
-	void	addMember(Client& client);
+	void	addMember(Client& client, bool isOper);
 	void	deleteMember(const std::string targetNick); // 멤버가 operator인 경우 deleteOperator 실행해줘야함.
 	bool	isFull();
 
@@ -73,7 +72,7 @@ public:
 
 	/* Operator */
 	bool	isOperator(const std::string targetNick) const;
-	void	addOperator(Client& client);
+	void	addOperator(const std::string targetNick);
 	void	deleteOperator(const std::string targetNick);
 
 	/* Modes */
@@ -84,6 +83,11 @@ public:
 	/* Message Sending */
 	void	sendTo(std::string message, Client& from, std::vector<Client&> to);
 	void	sendToAll(std::string message, Client& from);
+
+private:
+	/* Normal Member */
+	void	addNormalMember(const std::string targetNick);
+	void	deleteNormalMember(const std::string targetNick);
 
 };
 
