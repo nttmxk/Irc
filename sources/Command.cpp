@@ -65,6 +65,11 @@ bool Command::isTokenEnd()
 	return true;
 }
 
+void Command::passCommand()
+{
+	messageIndex += getNumParameter() + 1;
+}
+
 int Command::getNumParameter()
 {
 	int	num = 0;

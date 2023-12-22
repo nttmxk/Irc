@@ -40,6 +40,7 @@ public:
 	bool	isTokenEnd();
 	bool	isConnectEnd;
 	int		getNumParameter();
+	void	passCommand();
 
 	/* Connection Registration */
 	void pass(const std::string pwd);

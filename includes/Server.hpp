@@ -8,6 +8,7 @@
 # include <unistd.h>
 # include <poll.h>
 # include <fcntl.h>
+# include <ctime>
 
 # include "Client.hpp"
 # include "Channel.hpp"
@@ -40,8 +41,8 @@ private:
 	std::map<std::string, Channel*>	channels;
 	std::string						_pwd;
 
-	void				setPoll(int index, int fd, short events, short revents);
-	//std::list<Channel>
+	void	setPoll(int index, int fd, short events, short revents);
+	void	deleteClient(int clientFd);
 };
 
 #endif
