@@ -8,6 +8,7 @@
 # include <unistd.h>
 # include <poll.h>
 # include <fcntl.h>
+# include <ctime>
 
 # include "Client.hpp"
 # include "Channel.hpp"
@@ -20,10 +21,9 @@
 class Server {
 public:
 	Server(int portNum, std::string pwd);
-	Server();
 	~Server();
-	Server(const Server &orig);
-	Server &operator=(const Server &orig);
+
+	std::string startTime;
 
 	int				getServerFd(void) const;
 	struct pollfd	*getPollFds(void);
@@ -41,8 +41,8 @@ private:
 	std::map<std::string, Channel*>	channels;
 	std::string						_pwd;
 
-	void				setPoll(int index, int fd, short events, short revents);
-	//std::list<Channel>
+	void	setPoll(int index, int fd, short events, short revents);
+	void	deleteClient(int clientFd);
 };
 
 #endif

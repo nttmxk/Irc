@@ -12,18 +12,20 @@
  * 이미 서버에 등록되어 있는 경우, 462 보낸 후, fail 시도...?
  * Example: USER amy 0 * :Amy Ponds
  */
-void Command::user() {
+void Command::user(std::string time) {
+	int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
-	if (getNumParameter() < 5) {
+	std::string userName = tokens[messageIndex + 2];
+	std::string realName = tokens[messageIndex + 4];
+	messageIndex += numParam + 1;
+	std::clog << "[Log] user:" << userName << "," << realName << '\n';
+
+	if (numParam < 5) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "USER"));
 		return;
 	}
-
-	std::string userName = tokens[messageIndex + 2];
-	std::string realName = tokens[messageIndex + 4];
-
 	if (userName.length() < 1 || realName.length() < 1) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "USER"));
 		return;
@@ -37,7 +39,7 @@ void Command::user() {
 	client->setRealName(realName);
 	client->checkAuthorization();
 	this->sendReply(RPL_WELCOME(servername, nick));
-	this->sendReply(RPL_YOURHOST(servername, nick, "version"));
-	this->sendReply(RPL_CREATED(servername, nick, "creationDate"));
-//	this->sendReply(RPL_MYINFO(servername, nick, ));
+	this->sendReply(RPL_YOURHOST(servername, nick, "42.42.42"));
+	this->sendReply(RPL_CREATED(servername, nick, time));
+	this->sendReply(RPL_MYINFO(servername, nick, "42.42.42", "O", "O", "O"));
 }

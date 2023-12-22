@@ -21,7 +21,7 @@ static bool isValidName(const Client* target) {
 // OPER 파라미터로 받아온 비밀번호가 유효한지 확인
 // OPER를 실행한 클라이언트가 서버운영자이고, 
 // 입력받은 비밀번호가 해당 클라이언트의 비밀번호와 일치할 경우 유효
-static bool isValidPassword(const Client* client, const std::string password) {
+static bool isValidPassword(const Client* client, const std::string password, const std::string pwd) {
 	if (client == NULL)
 		return false;
 
@@ -31,7 +31,7 @@ static bool isValidPassword(const Client* client, const std::string password) {
 		return false;
 
 	// 클라이언트가 서버 운영자 중 한 명이면 password 유효한지 확인
-	return password != client->getPassword();
+	return password != pwd;
 }
 
 /* OPER <name> <password>
@@ -44,7 +44,7 @@ static bool isValidPassword(const Client* client, const std::string password) {
  * not connecting from a valid host for the given name, 491 보낸 후 fail 처리
  * 성공 시(name, password가 correct, 유효한 host에서 연결 중), 381을 user에게 보냄
  */
-void Command::oper(std::map<int, Client> clientsInServer) {
+void Command::oper(std::map<int, Client> clientsInServer, const std::string pwd) {
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
@@ -62,7 +62,7 @@ void Command::oper(std::map<int, Client> clientsInServer) {
 		return;
 	}
 	
-	if (isValidPassword(client, password) == false) {
+	if (isValidPassword(client, password, pwd) == false) {
 		this->sendReply(ERR_PASSWDMISMATCH(servername, nick));
 		return;
 	}
