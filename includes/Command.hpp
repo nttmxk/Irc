@@ -58,7 +58,7 @@ private:
 /* Channel Operations */
 	void join(std::map<std::string,Channel*> channelsInServer);
 	void part(std::map<std::string, Channel*> channelsInServer);
-	void topic();
+	void topic(std::map<std::string, Channel*> channelsInServer);
 	void invite(std::map<std::string,Channel*> channelsInServer);
 	void kick(std::map<std::string, Channel*> channelsInServer);
 

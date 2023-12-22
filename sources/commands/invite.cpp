@@ -48,7 +48,7 @@ void Command::invite(std::map<std::string, Channel*> channelsInServer) {
     }
 
     // 채널이 초대 전용 모드일 경우, 클라이언트가 초대권한이 있는지 확인
-    if (channelPtr->hasMode('i') && channelPtr->isOperator(nick) == false) {
+    if (channelPtr->isModeOn('i') && channelPtr->isOperator(nick) == false) {
         sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, targetChannel));
 		return;
     }

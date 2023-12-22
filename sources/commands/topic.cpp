@@ -1,4 +1,5 @@
 #include "../../includes/Command.hpp"
+#include <ctime> // time
 
 /* TOPIC <channel> [<topic>]
 * 주어진 채널의 토픽을 변경하거나 확인 
@@ -26,6 +27,42 @@
 *	- TOPIC #test :                   ; "#test" 채널의 토픽을 지움.
 *	- TOPIC #test                     ; "#test" 채널의 토픽을 확인.
 */
-void Command::topic() {
+void Command::topic(std::map<std::string, Channel*> channelsInServer) {
+    std::string servername = "irc.local";
+	std::string nick = client->getNickname();
 
+	if (getNumParameter() < 2) {
+		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "TOPIC"));
+		return;
+	}
+
+    std::string targetChannel = tokens[messageIndex + 1];
+    bool hasNewTopic = getNumParameter() >= 3 ? true : false;
+    std::string newTopic = getNumParameter() >= 3 ? tokens[messageIndex + 2] : "";
+    messageIndex += getNumParameter();
+
+    // 타겟 채널이 서버에 존재하는지 확인
+    Channel* channelPtr = isChannelExist(channelsInServer, targetChannel);
+    if (channelPtr == NULL) {
+        sendReply(ERR_NOSUCHCHANNEL(servername, nick, targetChannel));
+		return;
+    }
+
+    // 클라이언트가 타겟 채널에 참여하고 있는지 확인
+    if (channelPtr->isInChannel(nick) == false) {
+        sendReply(ERR_NOTONCHANNEL(servername, nick, targetChannel));
+		return;
+    }
+
+    // 채널이 초대 전용 모드일 경우, 클라이언트가 초대권한이 있는지 확인
+    if (channelPtr->isModeOn('t') && channelPtr->isOperator(nick) == false) {
+        sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, targetChannel));
+		return;
+    }
+
+    channelPtr->setTopic(newTopic);
+    std::string setTimeStr = std::to_string(std::time(nullptr));
+    sendReply(RPL_TOPIC(servername, nick, targetChannel, newTopic));
+    sendReply(RPL_TOPICWHOTIME(servername, nick, targetChannel, 
+                USER_ADDR(nick, client->getUserName(), "127.0.0.1"), setTimeStr));
 }

@@ -70,7 +70,7 @@ void Command::join(std::map<std::string,Channel*> channelsInServer) {
 		}
 
 		// 채널에 key가 설정되어 있다면, 입력받은 key와 일치하는지 확인
-		if (channelPtr->hasMode('k')) {
+		if (channelPtr->isModeOn('k')) {
 			std::string keyOfChannel = channelPtr->getKey();
 			if (i >= keys.size()) {
 				sendReply(ERR_BADCHANNELKEY(servername, nick, channelPtr->getName()));
@@ -89,7 +89,7 @@ void Command::join(std::map<std::string,Channel*> channelsInServer) {
 		}
 
 		// 초대 전용 채널인지 확인
-		if (channelPtr->hasMode('i')) {
+		if (channelPtr->isModeOn('i')) {
 			sendReply(ERR_INVITEONLYCHAN(servername, nick, channelPtr->getName()));
 			return;
 		}
