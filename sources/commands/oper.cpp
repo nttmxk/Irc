@@ -48,13 +48,13 @@ void Command::oper(std::map<int, Client> clientsInServer) {
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
-	if (tokens.size() < 3) {
+	if (getNumParameter() < 3) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "OPER"));
 		return;
 	}
 
-	std::string targetNick = tokens[1];
-	std::string password = tokens[2];
+	std::string targetNick = tokens[messageIndex + 1];
+	std::string password = tokens[messageIndex + 2];
 	Client* target = searchByNickname(targetNick, clientsInServer);
 
 	if (isValidName(target) == false) {

@@ -16,13 +16,13 @@ void Command::user() {
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
-	if (tokens.size() < 5) {
+	if (getNumParameter() < 5) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "USER"));
 		return;
 	}
 
-	std::string userName = tokens[2];
-	std::string realName = tokens[4];
+	std::string userName = tokens[messageIndex + 2];
+	std::string realName = tokens[messageIndex + 4];
 
 	if (userName.length() < 1 || realName.length() < 1) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "USER"));

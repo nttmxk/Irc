@@ -36,10 +36,6 @@ private:
 public:
 	Command(Client * _client, const std::string _message);
 	int getCommandType();
-	void pass(const std::string pwd);
-	void nick();
-//	void nick(std::map<int, Client*> &clients);
-	void	user();
 	bool	isTokenEnd();
 	bool	isConnectEnd;
 	int		getNumParameter();
@@ -48,9 +44,9 @@ private:
 	void parseMessage();
 	void sendReply(std::string);
 
-/* Connection Registration  */
-	void pass();
-	void nick();
+/* Connection Registration */
+	void pass(const std::string pwd);
+	void nick(std::map<int, Client*> &clients);
 	void user();
 	void oper(std::map<int, Client> clientsInServer);
 	void quit();
