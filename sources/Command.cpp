@@ -2,52 +2,52 @@
 #include <iostream> // cout
 #include <sys/socket.h> // send
 
-Command::Command()
-	: client(NULL), message("") {}
-Command::Command(const Command& abj) { (void)abj; }
-Command::~Command() {}
+//Command::Command()
+//	: client(NULL), message("") {}
+//Command::Command(const Command& abj) { (void)abj; }
+//Command::~Command() {}
 
 
 Command::Command(Client * _client, const std::string _message) 
-	: client(_client), message(_message) {
+	: client(_client), message(_message), messageIndex(0), isConnectEnd(false) {
 	
 	this->parseMessage();
-	this->execute(tokens[0]);
 }
 
 void Command::parseMessage() {
-	size_t        prev = 0;
-    size_t        next;
+	size_t		prev = 0;
+    size_t		next;
+	size_t		crlf;
 
     while (this->message[prev])
     {
-        next = this->message.find_first_of(" ,", prev);
-        if (next == std::string::npos || this->message[prev] == ':')
-        {
-            this->tokens.push_back(this->message.substr(prev));
-            break;
-        }
-        this->tokens.push_back(this->message.substr(prev, next - prev));
-        prev = next + 1;
+		crlf = this->message.find(CRLF, prev);
+		next = this->message.find(' ', prev);
+		if (this->message[prev] == ':' || crlf < next)
+		{
+            this->tokens.push_back(this->message.substr(prev, crlf - prev));
+			this->tokens.push_back(CRLF);
+			prev = crlf + 2;
+		}
+		else
+		{
+			this->tokens.push_back(this->message.substr(prev, next - prev));
+			prev = next + 1;
+		}
     }
+	messageSize = tokens.size();
 }
 
-void Command::execute(std::string cmd) {
+int Command::getCommandType()
+{
+	std::string cmd = tokens[messageIndex++];
 	int type = 0;
-	for ( ; type<4; type++) {
-		if (commandTypeStr[type] == cmd) break;
-	}
 
-	switch (type) {
-		case (PASS):
-			this->pass(); break;
-		case (NICK):
-			this->nick(); break;
-		case (USER):
-			this->user(); break;
-		default :
-			return;
-	}	
+	for ( ; type < 3; type++) {
+		if (commandTypeStr[type] == cmd)
+			return type;
+	}
+	return -1;
 }
 
 void Command::sendReply(std::string replyMsg) {
@@ -56,4 +56,21 @@ void Command::sendReply(std::string replyMsg) {
 	std::cout << ">> Sending message to client: " << tmp;
 	if (send(client->getClientFd(), tmp.c_str(), tmp.length(), 0) == -1)
 		throw std::runtime_error("Error sending message");
+}
+
+bool Command::isTokenEnd()
+{
+	if (messageIndex < messageSize)
+		return false;
+	return true;
+}
+
+int Command::getNumParameter()
+{
+	int	num = 0;
+
+	while (tokens[messageIndex + num] != CRLF)
+		num++;
+
+	return num;
 }

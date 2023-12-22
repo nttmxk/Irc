@@ -1,9 +1,9 @@
 #include "../includes/Client.hpp"
 
+
 Client::Client(int _fd) 
 	: client_fd(_fd), 
 	  nickname(""), userName(""), realName(""), 
-	  password(""),
 	  _authorized(false) {}
 
 Client::~Client() {}
@@ -24,10 +24,6 @@ std::string Client::getRealName() const {
 	return this->realName;
 }
 
-std::string	Client::getPassword() const {
-	return this->password;
-}
-    
 void Client::setNickname(const std::string nickname) {
 	this->nickname = nickname;
 }
@@ -40,14 +36,20 @@ void Client::setRealName(const std::string realName) {
 	this->realName = realName;
 }
 
-void Client::setPassword(const std::string password) {
-	this->password = password;
-}
-
 bool Client::isAuthorized() const {
 	return this->_authorized;
 }
 
 void Client::checkAuthorization() {
 	this->_authorized = true;
+}
+
+bool Client::isServerOper() const {
+	return modeStr.find(OPERATOR) != std::string::npos;
+}
+
+void Client::setServerOper() {
+	if (this->isServerOper())
+		return;
+	this->modeStr += 'O';
 }

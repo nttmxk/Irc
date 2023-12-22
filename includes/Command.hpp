@@ -6,6 +6,8 @@
 
 # include <string>
 # include <vector>
+# include <map>
+# define CRLF "\r\n"
 
 class Channel;
 // typedef enum ChannelMode;
@@ -24,46 +26,30 @@ private:
 	Client*						client;
 	std::string					message;
 	std::vector<std::string>	tokens;
+	int 						messageIndex;
+	int 						messageSize;
 
-	Command();
-	Command(const Command& abj);
-	~Command();
+//	Command();
+//	Command(const Command& abj);
+//	~Command();
 
 public:
 	Command(Client * _client, const std::string _message);
+	int getCommandType();
+	bool	isTokenEnd();
+	bool	isConnectEnd;
+	int		getNumParameter();
 
 private:
 	void parseMessage();
-	void execute(std::string cmd);
 	void sendReply(std::string);
 
-/* Connection Registration  */
-	void pass();
-	void nick();
+/* Connection Registration */
+	void pass(const std::string pwd);
+	void nick(std::map<int, Client*> &clients);
 	void user();
-
-	/* OPER <name> <password>
-	 * used by a normal user to obtain IRC operator privileges
-	 * Numeric Replies: ERR_NEEDMOREPARAMS (461)
-	 					ERR_PASSWDMISMATCH (464)
-						ERR_NOOPERHOST (491)
-						RPL_YOUREOPER (381)
-	 * password 오류 시, 464 보낸 후 fail 처리
-	 * not connecting from a valid host for the given name, 491 보낸 후 fail 처리
-	 * 성공 시(name, password가 correct, 유효한 host에서 연결 중), 381을 user에게 보냄
-	 */
-	void oper(Client& client, std::string name, std::string password);
-
-	/* QUIT [<reason>]
-	 * A client session is terminated with a quit message.  
-	 * The server acknowledges this by sending an ERROR message to the client.
-	 * Example: QUIT :Gone to have lunch 
-				:syrk!kalt@millennium.stealth.net QUIT :Gone to have lunch 
-				; User syrk has quit IRC to have lunch. ( --> Preferred message format )
-	 * client가 서버 접속을 끊음, client가 접속해 있는 모든 채널에서 나감
-	 */
-	void quit(Client& Client, std::string message);
-
+	void oper(std::map<int, Client> clientsInServer);
+	void quit();
 
 /* Channel Operations */
 

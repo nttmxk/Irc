@@ -9,7 +9,12 @@
 # include <poll.h>
 # include <fcntl.h>
 
+# include "Client.hpp"
+# include "Channel.hpp"
+# include "Command.hpp"
+
 # define BUF_LEN 1024
+# define MSG_LEN 2048
 # define USER_MAX 128
 
 class Server {
@@ -27,11 +32,14 @@ public:
 	void			runCommand(int clientFd);
 
 private:
-	int					serverFd;
-	struct sockaddr_in	serverAddress;
-	char				buffer[BUF_LEN];
-	struct pollfd		pollFds[USER_MAX + 4];
-	std::string			_pwd;
+	int								serverFd;
+	struct sockaddr_in				serverAddress;
+	struct pollfd					pollFds[USER_MAX + 4];
+	char							buffer[BUF_LEN];
+	std::map<int, std::string>		message;
+	std::map<int, Client*>			clients;
+	std::map<std::string, Channel*>	channels;
+	std::string						_pwd;
 
 	void				setPoll(int index, int fd, short events, short revents);
 	//std::list<Channel>

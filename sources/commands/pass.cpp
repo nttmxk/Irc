@@ -9,25 +9,22 @@
  * 					ERR_PASSWDMISMATCH (464) : 제공된 비밀번호와 서버에서 기대하는 비밀번호 간의 불일치
  * 서버에서 예상한 비밀번호가 아니면, (464)를 보낸 후 ERROR와 함께 연결 닫기
  */
-void Command::pass() {
+void Command::pass(const std::string pwd) {
 
 	const std::string servername = "irc.local";
 	const std::string nick = this->client->getNickname();
 
-	if (this->tokens.size() < 2) {
+	if (getNumParameter() < 2) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "PASS"));
 		return;
 	}
 
-	std::string password = this->tokens[1];
+	std::string password = this->tokens[messageIndex + 1];
 	if (this->client->isAuthorized()) {
 		this->sendReply(ERR_ALREADYREGISTRED(servername, nick));
 		return;
-	} else if (this->client->getPassword() != password) {
+	} else if (pwd != password) {
 		this->sendReply(ERR_PASSWDMISMATCH(servername, nick));
 		return;
-	} else {
-		this->client->setPassword(password);
 	}
-	
 } 
