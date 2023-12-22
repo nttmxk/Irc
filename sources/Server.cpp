@@ -10,6 +10,7 @@ Server::Server(int portNum, std::string pwd) {
 	serverAddress.sin_addr.s_addr = INADDR_ANY;
 
 	if (bind(serverFd, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) == -1) {
+		std::cerr << "Socket bind err\n";
 		close(serverFd);
 		exit(1);
 	}
@@ -83,6 +84,7 @@ void Server::readMessage(int clientFd) {
 	else if (readSize > 1 && buffer[readSize - 2] == '\r' && buffer[readSize - 1] == '\n')
 	{
 		message[clientFd].append(buffer);
+		std::clog << "[Log] " << clientFd << ": \n" << message[clientFd] << '\n';
 		runCommand(clientFd);
 		message[clientFd].clear();
 		// when runCommand executes <QUIT>... then setPoll and close should be called here too?
