@@ -44,18 +44,18 @@
 */
 void Command::join(std::map<std::string,Channel> channelsInServer) {
 	
-	if (getParamsCnt() < 2) {
+	if (getNumParamters() < 2) {
 		// ERR_NEEDMOREPARAMS
 		return;
 	}
 	
 	std::vector<std::string> channels;
 	std::vector<std::string> keys;
-	bool hasKeys = tokens.size() >= 3;
+	bool hasKeys = getNumParamters() >= 3;
 	
-	channels = splitByComma(tokens[1]);
+	channels = splitByComma(tokens[messageIndex + 1]);
 	if (hasKeys)
-		keys = splitByComma(tokens[2]);
+		keys = splitByComma(tokens[messageIndex + 2]);
 
 	// 벡터 순회하면서 채널에 들어가기
 	for (int i=0; i<channels.size(); i++) {
