@@ -16,4 +16,5 @@ void Command::quit() {
 	// 참여한 채널에 quitMsg 보내고 나가기
 
 	// 서버에서 나가기
+	isConnectEnd = true;
 }
