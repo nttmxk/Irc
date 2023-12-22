@@ -22,6 +22,9 @@ Server::Server(int portNum, std::string pwd) {
 	for (int i = 0; i < USER_MAX + 4; ++i) {
 		setPoll(i, -1, 0, 0);
 	}
+	time_t t;
+	time(&t);
+	startTime = ctime(&t);
 	setPoll(serverFd, serverFd, POLLIN, 0);
 }
 
@@ -88,7 +91,6 @@ void Server::readMessage(int clientFd) {
 		runCommand(clientFd);
 		message[clientFd].clear();
 		// when runCommand executes <QUIT>... then setPoll and close should be called here too?
-		// message flush
 	}
 	else // Ctrl + D handling
 		message[clientFd].append(buffer);
@@ -108,7 +110,7 @@ void Server::runCommand(int clientFd) {
 				command.nick(clients);
 				break;
 			case (USER):
-				command.user();
+				command.user(startTime);
 				break;
 			default :
 				break;

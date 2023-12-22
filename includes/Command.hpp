@@ -44,7 +44,7 @@ public:
 	/* Connection Registration */
 	void pass(const std::string pwd);
 	void nick(std::map<int, Client*> &clients);
-	void user();
+	void user(std::string time);
 	void oper(std::map<int, Client> clientsInServer, const std::string pwd);
 	void quit();
 

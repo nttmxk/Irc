@@ -20,10 +20,9 @@
 class Server {
 public:
 	Server(int portNum, std::string pwd);
-	Server();
 	~Server();
-	Server(const Server &orig);
-	Server &operator=(const Server &orig);
+
+	std::string startTime;
 
 	int				getServerFd(void) const;
 	struct pollfd	*getPollFds(void);
