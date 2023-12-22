@@ -42,7 +42,7 @@ int Command::getCommandType()
 	std::string cmd = tokens[messageIndex++];
 	int type = 0;
 
-	for ( ; type<4; type++) {
+	for ( ; type < 3; type++) {
 		if (commandTypeStr[type] == cmd)
 			return type;
 	}
