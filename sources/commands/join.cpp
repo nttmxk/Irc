@@ -42,41 +42,97 @@
 *	- :WiZ JOIN #Twilight_zone        ; WiZ가 채널 #Twilight_zone에 참여.
 *	- :dan-!d@localhost JOIN #test    ; dan-이 채널 #test에 참여.
 */
-void Command::join() {
-    
-    if (tokens.size() < 2) {
-        // ERR_NEEDMOREPARAMS
-        return;
-    }
-    
-    std::vector<std::string> channels;
-    std::vector<std::string> keys;
-    bool hasKeys = tokens.size() >= 3;
-    
-    channels = splitByComma(tokens[1]);
-    if (hasKeys)
-        keys = splitByComma(tokens[2]);
+void Command::join(std::vector<Channel> channelsInServer) {
+	
+	if (tokens.size() < 2) {
+		// ERR_NEEDMOREPARAMS
+		return;
+	}
+	
+	std::vector<std::string> channels;
+	std::vector<std::string> keys;
+	bool hasKeys = tokens.size() >= 3;
+	
+	channels = splitByComma(tokens[1]);
+	if (hasKeys)
+		keys = splitByComma(tokens[2]);
 
-    // 벡터 순회하면서 채널에 들어가기
-    /* 예외 상황
-        - 해당 채널이 없는 경우 => 채널 만들어서 입장
-        - 채널 키가 있는데 입력받은 키와 맞지 않은 경우 => ERR_BADCHANNELKEY (475)
-        - 채널에 참여가능한 user limit을 초과한 경우 => ERR_CHANNELISFULL (471)
-        - 초대 전용 채널에 참여하려고 한 경우 => ERR_INVITEONLYCHAN (473)
-    */
-    
-    // 성공한 경우
-    // 1. Join Msg -> 채널로 보내는 건가..?
-    // 2. 참여한 채널에 토픽이 잇으면 RPL_TOPIC (332)
-    // 3. 현재 채널에 참여한 사용자 목록 - RPL_NAMREPLY (353) * 채널 참여자 수 + RPL_ENDOFNAMES (366)
+	// 벡터 순회하면서 채널에 들어가기
+	for (int i=0; i<channels.size(); i++) {
+		// 채널이 서버에 존재하는지 확인, 없으면 새로 생성
+		Channel* channelPtr = isChannelExist(channelsInServer, channels[i]);
+		if (channelPtr == NULL) {
+			// create channel
+		}
+
+		// 채널 key 가 맞는지 확인
+		std::string keyOfChannel = channelPtr->getKey();
+		if (keyOfChannel != "") {
+			if (i >= keys.size()) {
+				// error reply 475
+			}
+			else if (keys[i] != keyOfChannel) {
+				// error reply 475
+			}
+		}
+
+		
+	}
+	/* 로직
+		- is valid channel name
+			- if no -> loop break.. ? or continue
+		- is channel full
+			- if yes -> error reply 471
+		- is invite-only channel
+			- if yes -> error reply 473
+		- join channel
+	*/
+	/* 예외 상황
+		- 해당 채널이 없는 경우 => 채널 만들어서 입장
+		- 채널 키가 있는데 입력받은 키와 맞지 않은 경우 => ERR_BADCHANNELKEY (475)
+		- 채널에 참여가능한 user limit을 초과한 경우 => ERR_CHANNELISFULL (471)
+		- 초대 전용 채널에 참여하려고 한 경우 => ERR_INVITEONLYCHAN (473)
+	*/
+	
+	// 성공한 경우
+	// 1. Join Msg -> 채널로 보내는 건가..?
+	// 2. 참여한 채널에 토픽이 잇으면 RPL_TOPIC (332)
+	// 3. 현재 채널에 참여한 사용자 목록 - RPL_NAMREPLY (353) * 채널 참여자 수 + RPL_ENDOFNAMES (366)
 
 }
+
+// ',' 기준으로 채널 split
+static std::vector<std::string> splitByComma(std::string str) {
+	std::vector<std::string> ret;
+
+	std::size_t pos = 0;
+	while (pos != std::string::npos) {
+		std::size_t tmpPos = str.find(',', pos);
+		int count = (tmpPos == std::string::npos) ? str.size() - pos : tmpPos - pos;
+		ret.push_back(str.substr(pos, count));
+		pos = (tmpPos == std::string::npos) ? tmpPos : tmpPos + 1;
+	}
+	
+	return ret;
+}
+
 
 static std::string getValidChannelName(std::string channel) {
-    return channel;
+	return channel;
 }
 
-static std::vector<std::string> splitByComma(std::string str) {
-    // ',' 기준으로 채널 split
-    
+static Channel* isChannelExist(std::vector<Channel> channelsInServer, std::string channelName) {
+	std::vector<Channel>::iterator it = channelsInServer.begin();
+	for ( ; it != channelsInServer.end(); it++) {
+		if (channelName == it->getName())
+			return &(*it);
+	}
+	return NULL;
 }
+
+
+
+
+
+
+

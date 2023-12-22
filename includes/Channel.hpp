@@ -21,6 +21,8 @@ private:
 	
 	// 채널 이름
 	std::string name;
+	// 채널 키
+	std::string key;
 	// 채널 토픽
 	std::string	topic;
 	// 채널 모드
@@ -37,11 +39,12 @@ public:
 	~Channel();
 
 	/* Getter */
-	std::string&					getName();
-	std::string&					getTopic();
-	std::string&					getMode();
-	std::map <std::string, Client>&	getMembers();
-	std::vector<std::string>&		getOperators();
+	std::string						getName();
+	std::string						getKey();	
+	std::string						getTopic();
+	std::string						getMode();
+	std::map <std::string, Client>	getMembers();
+	std::vector<std::string>		getOperators();
 
 	/* Setter */
 	void	setTopic(std::string& newTopic);

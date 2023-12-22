@@ -3,6 +3,7 @@
 
 # include "../includes/NumericReply.hpp"
 # include "../includes/Client.hpp"
+# include "../includes/Channel.hpp"
 
 # include <string>
 # include <vector>
