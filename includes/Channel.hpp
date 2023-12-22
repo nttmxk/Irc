@@ -59,6 +59,7 @@ public:
 	/* Setter */
 	void	setTopic(std::string newTopic);
 	void	setKey(std::string newKey);
+	void	setMemberLimit(int n);
 	
 	/* Member */
 	bool	isInChannel(const std::string targetNick) const;
