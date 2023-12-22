@@ -57,30 +57,61 @@ void Server::addClient(void) {
 		throw std::runtime_error("Error\nfcntl\n");
 	}
 
+	clients[clientFd] = new Client(clientFd);
+//	std::clog << "[Log] " << clientFd << " is connected\n";
 	setPoll(clientFd, clientFd, POLLIN | POLLHUP, 0);
 }
 
 void Server::readMessage(int clientFd) {
-	int messageSize = read(clientFd, buffer, BUF_LEN);
+	int readSize = recv(clientFd, buffer, BUF_LEN - 1, MSG_DONTWAIT);
 
-	if (messageSize < 0) {
+	if (readSize < 0) {
 		setPoll(clientFd, -1, 0, 0);
 		close(clientFd);
-		throw std::runtime_error("Error\nmessageSize < 0\n");
+		throw std::runtime_error("Error\nMessage read size < 0\n");
 	}
-	if (messageSize == 0) // when connection is closed, this is not an error right?
+	buffer[readSize] = 0;
+//	std::clog << "Message from " << clientFd << " with rSize: " << readSize << '\n' << buffer << '\n';
+	if (readSize == 0) // when connection is closed, this is not an error right?
 	{
-//		runCommand(clientFd);
-		setPoll(clientFd, -1, 0, 0);
-		close(clientFd);
-	} else // Ctrl+D handling? saving buffer?
-	{
+		std::clog << "[Log] " << clientFd << ": Quit\n";
+		message[clientFd] = "QUIT :<reason>\r\n"; // reason
 		runCommand(clientFd);
+		setPoll(clientFd, -1, 0, 0);
+		close(clientFd);
 	}
+	else if (readSize > 1 && buffer[readSize - 2] == '\r' && buffer[readSize - 1] == '\n')
+	{
+		message[clientFd].append(buffer);
+		runCommand(clientFd);
+		message[clientFd].clear();
+		// when runCommand executes <QUIT>... then setPoll and close should be called here too?
+		// message flush
+	}
+	else // Ctrl + D handling
+		message[clientFd].append(buffer);
 }
 
 void Server::runCommand(int clientFd) {
-	(void)clientFd;
+	Command command(clients[clientFd], message[clientFd]);
+	int 	type;
+
+	while (!command.isEnd()) {
+		type = command.getCommandType();
+		switch (type) {
+			case (PASS):
+				command.pass(_pwd);
+				break;
+			case (NICK):
+				command.nick();
+				break;
+			case (USER):
+				command.user();
+				break;
+			default :
+				break;
+		}
+	}
 }
 
 

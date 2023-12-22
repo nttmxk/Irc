@@ -7,6 +7,7 @@
 
 # include <string>
 # include <vector>
+# include <map>
 
 class Channel;
 // typedef enum ChannelMode;
@@ -25,23 +26,30 @@ private:
 	Client*						client;
 	std::string					message;
 	std::vector<std::string>	tokens;
+	int 						messageIndex;
+	int 						messageSize;
 
-	Command();
-	Command(const Command& abj);
-	~Command();
+//	Command();
+//	Command(const Command& abj);
+//	~Command();
 
 public:
 	Command(Client * _client, const std::string _message);
+	int getCommandType();
+	void pass(const std::string pwd);
+	void nick();
+//	void nick(std::map<int, Client*> &clients);
+	void user();
+	bool isEnd();
 
 private:
 	void parseMessage();
-	void execute(std::string cmd);
 	void sendReply(std::string);
 
 /* Connection Registration  */
-	void pass();
-	void nick();
-	void user();
+//	void pass();
+//	void nick();
+//	void user();
 
 	/* OPER <name> <password>
 	 * used by a normal user to obtain IRC operator privileges
