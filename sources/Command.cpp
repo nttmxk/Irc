@@ -40,7 +40,7 @@ void Command::parseMessage() {
 
 int Command::getCommandType()
 {
-	std::string cmd = tokens[messageIndex++];
+	std::string cmd = tokens[messageIndex];
 	int type = 0;
 
 	for ( ; type < 3; type++) {

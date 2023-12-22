@@ -13,17 +13,19 @@
  * Example: USER amy 0 * :Amy Ponds
  */
 void Command::user() {
+	int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
-	if (getNumParameter() < 5) {
+	std::string userName = tokens[messageIndex + 2];
+	std::string realName = tokens[messageIndex + 4];
+	messageIndex += numParam + 1;
+	std::clog << "[Log] user:" << userName << "," << realName << '\n';
+
+	if (numParam < 5) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "USER"));
 		return;
 	}
-
-	std::string userName = tokens[messageIndex + 2];
-	std::string realName = tokens[messageIndex + 4];
-
 	if (userName.length() < 1 || realName.length() < 1) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "USER"));
 		return;

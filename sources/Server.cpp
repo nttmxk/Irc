@@ -105,7 +105,7 @@ void Server::runCommand(int clientFd) {
 				command.pass(_pwd);
 				break;
 			case (NICK):
-				command.nick();
+				command.nick(clients);
 				break;
 			case (USER):
 				command.user();
