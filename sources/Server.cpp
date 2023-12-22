@@ -141,15 +141,15 @@ Server::~Server() {
 		it->second = nullptr;
 		++it;
 	}
-	std::map<std::string, Channel*>::iterator it2 = channels.begin();
-	while (it2 != channels.end())
-	{
-		delete it2->second;
-		it2->second = nullptr;
-		++it2;
-	}
+//	std::map<std::string, Channel*>::iterator it2 = channels.begin();
+//	while (it2 != channels.end())
+//	{
+//		delete it2->second;
+//		it2->second = nullptr;
+//		++it2;
+//	}
 	clients.clear();
-	messages.clear();
-	channels.clear();
+	message.clear();
+//	channels.clear();
 	close(serverFd);
 }
