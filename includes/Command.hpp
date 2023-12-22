@@ -54,11 +54,11 @@ private:
 	void quit();
 
 /* Channel Operations */
-	void join(std::map<std::string,Channel> channelsInServer);
+	void join(std::map<std::string,Channel*> channelsInServer);
 	void part();
 	void topic();
-	void invite();
-	void kick();
+	void invite(std::map<std::string,Channel*> channelsInServer);
+	void kick(std::map<std::string, Channel*> channelsInServer);
 
 /* Server Queries and Commands */
 	// https://modern.ircdocs.horse/#mode-message 내용이 너무 많아서... 링크 달아둘게요

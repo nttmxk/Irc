@@ -19,6 +19,8 @@ private:
 
 	bool		_authorized;
 
+	std::vector<std::string> joinedChannels;
+
 	Client();
 
 public:
@@ -32,6 +34,7 @@ public:
 	std::string getRealName() const;
 	std::string	getPassword() const;
 	std::string getUserMode() const;
+	std::vector<std::string> getJoinendChannels() const;
 
     void    setNickname(const std::string nickname);
 	void	setUserName(const std::string userName);

@@ -42,10 +42,13 @@
 *	- :WiZ JOIN #Twilight_zone        ; WiZ가 채널 #Twilight_zone에 참여.
 *	- :dan-!d@localhost JOIN #test    ; dan-이 채널 #test에 참여.
 */
-void Command::join(std::map<std::string,Channel> channelsInServer) {
-	
+void Command::join(std::map<std::string,Channel*> channelsInServer) {
+	std::string servername = "irc.local";
+	std::string nick = client->getNickname();
+
 	if (getNumParameter() < 2) {
 		// ERR_NEEDMOREPARAMS
+		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "JOIN"));
 		return;
 	}
 	
@@ -56,6 +59,7 @@ void Command::join(std::map<std::string,Channel> channelsInServer) {
 	channels = splitByComma(tokens[messageIndex + 1]);
 	if (hasKeys)
 		keys = splitByComma(tokens[messageIndex + 2]);
+	messageIndex += getNumParameter();
 
 	// 벡터 순회하면서 채널에 들어가기
 	for (int i=0; i<channels.size(); i++) {
@@ -69,30 +73,51 @@ void Command::join(std::map<std::string,Channel> channelsInServer) {
 		if (channelPtr->hasMode('k')) {
 			std::string keyOfChannel = channelPtr->getKey();
 			if (i >= keys.size()) {
-				// ERR_BADCHANNELKEY (475)
+				sendReply(ERR_BADCHANNELKEY(servername, nick, channelPtr->getName()));
+				return;
 			}
 			else if (keys[i] != keyOfChannel) {
-				// ERR_BADCHANNELKEY (475)
+				sendReply(ERR_BADCHANNELKEY(servername, nick, channelPtr->getName()));
+				return;
 			}
 		}
 
+		// 채널이 가득 찼는지 확인
 		if (channelPtr->isFull()) {
-			// ERR_CHANNELISFULL (471)
+			sendReply(ERR_CHANNELISFULL(servername, nick, channelPtr->getName()));
+			return;
 		}
 
 		// 초대 전용 채널인지 확인
 		if (channelPtr->hasMode('i')) {
-			// ERR_INVITEONLYCHAN (473)
+			sendReply(ERR_INVITEONLYCHAN(servername, nick, channelPtr->getName()));
+			return;
 		}
-
-	}
-	// join channel
 	
-	// 성공한 경우
-	// 1. Join Msg -> 채널로 보내는 건가..?
-	// 2. 참여한 채널에 토픽이 잇으면 RPL_TOPIC (332)
-	// 3. 현재 채널에 참여한 사용자 목록 - RPL_NAMREPLY (353) * 채널 참여자 수 + RPL_ENDOFNAMES (366)
+	
+		// join channel
+		channelPtr->addMember(*client);
 
+		// 1. Join Msg -> 채널로 보내는 건가..?
+		std::string joinMsg = USER_ADDR(nick, client->getUserName(), "127.0.0.1") \
+								+ " has joined " + channelPtr->getName() + "\r\n";
+		// 2. 참여한 채널에 토픽이 잇으면 RPL_TOPIC (332)
+		sendReply(RPL_TOPIC(servername, nick, channelPtr->getName(), channelPtr->getTopic()));
+		// 3. 현재 채널에 참여한 사용자 목록 - RPL_NAMREPLY (353) * 채널 참여자 수 + RPL_ENDOFNAMES (366)
+		std::string memberListStr = "";
+		std::vector<std::string>::iterator it; 
+		std::vector<std::string>::iterator end_it; 
+
+		it = channelPtr->getOperators().begin();
+		end_it = channelPtr->getOperators().end();
+		for ( ; it != end_it; it++) 
+			memberListStr += ("@" + *it + " ");
+
+		it = channelPtr->getNormalMembers().begin(); 
+		end_it = channelPtr->getNormalMembers().end();
+		for ( ; it != end_it; it++) 
+			memberListStr += (*it + " ");
+	}
 }
 
 // ',' 기준으로 채널 split
@@ -111,17 +136,13 @@ static std::vector<std::string> splitByComma(std::string str) {
 }
 
 
-static std::string getValidChannelName(std::string channel) {
-	return channel;
-}
-
-static Channel* isChannelExist(std::map<std::string,Channel> channelsInServer, std::string channelName) {
-	std::map<std::string,Channel>::iterator channel;
+static Channel* isChannelExist(std::map<std::string,Channel*> channelsInServer, std::string channelName) {
+	std::map<std::string,Channel*>::iterator channel;
 
 	channel = channelsInServer.find(channelName);
 	if (channel == channelsInServer.end())
 		return NULL;
-	return &(channel->second);
+	return channel->second;
 }
 
 

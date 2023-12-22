@@ -59,7 +59,7 @@
 	":" + servername + " 441 " + nick + " " + targetUser + " #" + channel + " :They are not on that channel\r\n"
 // ERR_NOTONCHANNEL (442)		// part, topic, invite, kick
 # define ERR_NOTONCHANNEL(servername, nick, channel) \
-	":" + servername + " 442 " + nick + " #" + channel + " :You're not on that channel!\r\n"
+	":" + servername + " 442 " + nick + " " + channel + " :You're not on that channel!\r\n"
 // ERR_USERONCHANNEL (443)		// invite
 # define ERR_USERONCHANNEL(servername, nick, targetUser, channel) \
 	":" + servername + " 443 " + nick + " " + targetUser + " #" + channel + " :is already on channel\r\n"
@@ -72,9 +72,18 @@
 // ERR_PASSWDMISMATCH (464)		// pass, oper
 # define ERR_PASSWDMISMATCH(servername, nick) \
 	":" + servername + " 464 " + nick + " :Password incorrect\r\n"
+// ERR_CHANNELISFULL (471)		// join
+#define ERR_CHANNELISFULL(servername, nick, channel) \
+	":" + servername + " 471 " + nick + " " + channel + " :Cannot join channel (+l)\r\n"
+// ERR_INVITEONLYCHAN (473)	// join
+#define ERR_INVITEONLYCHAN(servername, nick, channel) \
+	":" + servername + " 473 " + nick + " " + channel + " :Cannot join channel (+i)\r\n"
+// ERR_BADCHANNELKEY (475)		// join
+#define ERR_BADCHANNELKEY(servername, nick, channel) \
+	":" + servername + " 475 " + nick + " " + channel + " :Cannot join channel (+k)\r\n"
 // ERR_CHANOPRIVSNEEDED (482)	// topic, invite, kick, mode
 # define ERR_CHANOPRIVSNEEDED(servername, nick, channel) \
-	":" + servername + " 482 " + nick + " #" + channel + " :You must be a channel operator\r\n"
+	":" + servername + " 482 " + nick + " " + channel + " :You must be a channel operator\r\n"
 // ERR_NOOPERHOST (491)			// oper
 # define ERR_NOOPERHOST(servername, nick) \
 	":" + servername + " 491 " + nick + " :No O-lines for your host\r\n"
@@ -95,9 +104,7 @@ ERR_WILDTOPLEVEL (414)		// privmsg
 
 ERR_NICKCOLLISION (436)		// nick
 
-// ERR_CHANNELISFULL (471)		// join
-#define ERR_CHANNELISFULL(servername, nick, channel) \
-	":" + servername + " 471 " + nick + " #" + channel + " :Cannot join channel , channel is full(+l)\n"
+
 #define ERR_UNKNOWNMODE(servername, nick, mode) \
 	":" + servername + " 472 " + nick + " " + mode + " :is unknown mode char to me for that channel\n"
 // ERR_INVITEONLYCHAN (473)	// join
@@ -106,9 +113,7 @@ ERR_NICKCOLLISION (436)		// nick
 // ERR_BANNEDFROMCHAN (474)	// join
 #define ERR_BANNEDFROMCHAN(servername, nick, channel) \
 	":" + servername + " 474 " + nick + " #" + channel + " :Cannot join channel (+b)\n"
-// ERR_BADCHANNELKEY (475)		// join
-#define ERR_BADCHANNELKEY(servername, nick, channel) \
-	":" + servername + " 475 " + nick + " #" + channel + " :Bad channel key\n"
+
 // ERR_BADCHANMASK (476)		// join, kick
 #define ERR_BADCHANMASK(servername, nick) \
 	":" + servername + " 476 * " + nick + " :Bad Channel Mask\n"
