@@ -1,31 +1,8 @@
-#ifndef CHANNEL_HPP
-# define CHANNEL_HPP
+#include "../includes/Channel.hpp"
 
-# include <map>
-# include <vector>
-# include <string>
-
-class Client;
-
-# define ChannelModeCnt 5
-typedef enum {
-	INVITE_ONLY,	// Set/remove Invite-only channel
-	TOPIC,			// Set/remove the restrictions of the TOPIC command to channel operators
-	KEY,			// Set/remove the channel key (password)
-	OPER,			// Give/take channel operator privilege
-	USER_LIMIT		// Set/remove the user limit to channel
-} ChannelMode;
-
-static const char channelModeChar[ChannelModeCnt] = {'i', 't', 'k', 'o', 'l'};
-
-class Channel {
-private:
-	
-	// 채널 이름
-	std::string name;
-	// 채널 키
-	std::string key;
-	// 채널 토픽
+Channel() : name(""), key(""),  {
+    name = "";
+    key = "";
 	std::string	topic;
 	// 채널 모드
 	bool		mode[ChannelModeCnt];
@@ -40,11 +17,11 @@ private:
 	std::vector<std::string>	normalMembers;
 	// 초대 보낸 유저 리스트
 	std::vector<std::string>	invitedUsers;
+}
 
-	Channel();
+Channel(std::string const &name) {
 
-public:
-	Channel(std::string const &name);
+}
 	~Channel();
 
 	/* Getter */
@@ -80,11 +57,3 @@ public:
 	void	onMode(const ChannelMode& mode);
 	void	offMode(const ChannelMode& mode);
 	bool	isModeOn(const char mode);
-
-	/* Message Sending */
-	void	sendTo(std::string message, Client& from, std::vector<Client&> to);
-	void	sendToAll(std::string message, Client& from);
-
-};
-
-#endif
