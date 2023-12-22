@@ -7,6 +7,7 @@
 # include <string>
 # include <vector>
 # include <map>
+# define CRLF "\r\n"
 
 class Channel;
 // typedef enum ChannelMode;
@@ -38,8 +39,10 @@ public:
 	void pass(const std::string pwd);
 	void nick();
 //	void nick(std::map<int, Client*> &clients);
-	void user();
-	bool isEnd();
+	void	user();
+	bool	isTokenEnd();
+	bool	isConnectEnd;
+	int		getNumParameter();
 
 private:
 	void parseMessage();

@@ -96,7 +96,7 @@ void Server::runCommand(int clientFd) {
 	Command command(clients[clientFd], message[clientFd]);
 	int 	type;
 
-	while (!command.isEnd()) {
+	while (!command.isTokenEnd()) {
 		type = command.getCommandType();
 		switch (type) {
 			case (PASS):
@@ -110,6 +110,10 @@ void Server::runCommand(int clientFd) {
 				break;
 			default :
 				break;
+		}
+		if (command.isConnectEnd)
+		{
+			// disconnect routine
 		}
 	}
 }

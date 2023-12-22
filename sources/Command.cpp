@@ -9,7 +9,7 @@
 
 
 Command::Command(Client * _client, const std::string _message) 
-	: client(_client), message(_message), messageIndex(0) {
+	: client(_client), message(_message), messageIndex(0), isConnectEnd(false) {
 	
 	this->parseMessage();
 }
@@ -21,11 +21,12 @@ void Command::parseMessage() {
 
     while (this->message[prev])
     {
-		crlf = this->message.find("\r\n", prev);
+		crlf = this->message.find(CRLF, prev);
 		next = this->message.find(' ', prev);
 		if (this->message[prev] == ':' || crlf < next)
 		{
             this->tokens.push_back(this->message.substr(prev, crlf - prev));
+			this->tokens.push_back(CRLF);
 			prev = crlf + 2;
 		}
 		else
@@ -57,9 +58,19 @@ void Command::sendReply(std::string replyMsg) {
 		throw std::runtime_error("Error sending message");
 }
 
-bool Command::isEnd()
+bool Command::isTokenEnd()
 {
 	if (messageIndex < messageSize)
 		return false;
 	return true;
+}
+
+int Command::getNumParameter()
+{
+	int	num = 0;
+
+	while (tokens[messageIndex + num] != CRLF)
+		num++;
+
+	return num;
 }
