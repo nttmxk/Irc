@@ -25,6 +25,8 @@ private:
 	Client*						client;
 	std::string					message;
 	std::vector<std::string>	tokens;
+	int 						messageIndex;
+	int 						messageSize;
 
 //	Command();
 //	Command(const Command& abj);
@@ -37,7 +39,7 @@ public:
 	void nick();
 //	void nick(std::map<int, Client*> &clients);
 	void user();
-
+	bool isEnd();
 
 private:
 	void parseMessage();

@@ -84,6 +84,7 @@ void Server::readMessage(int clientFd) {
 	{
 		message[clientFd].append(buffer);
 		runCommand(clientFd);
+		message[clientFd].clear();
 		// when runCommand executes <QUIT>... then setPoll and close should be called here too?
 		// message flush
 	}
@@ -93,17 +94,23 @@ void Server::readMessage(int clientFd) {
 
 void Server::runCommand(int clientFd) {
 	Command command(clients[clientFd], message[clientFd]);
-	int 	type = command.getCommandType();
+	int 	type;
 
-	switch (type) {
-		case (PASS):
-			command.pass(_pwd);
-		case (NICK):
-			command.nick();
-		case (USER):
-			command.user();
-		default :
-			return;
+	while (!command.isEnd()) {
+		type = command.getCommandType();
+		switch (type) {
+			case (PASS):
+				command.pass(_pwd);
+				break;
+			case (NICK):
+				command.nick();
+				break;
+			case (USER):
+				command.user();
+				break;
+			default :
+				break;
+		}
 	}
 }
 

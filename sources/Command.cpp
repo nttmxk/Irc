@@ -9,7 +9,7 @@
 
 
 Command::Command(Client * _client, const std::string _message) 
-	: client(_client), message(_message) {
+	: client(_client), message(_message), messageIndex(0) {
 	
 	this->parseMessage();
 }
@@ -34,11 +34,12 @@ void Command::parseMessage() {
 			prev = next + 1;
 		}
     }
+	messageSize = tokens.size();
 }
 
 int Command::getCommandType()
 {
-	std::string cmd = tokens[0];
+	std::string cmd = tokens[messageIndex++];
 	int type = 0;
 
 	for ( ; type<4; type++) {
@@ -54,4 +55,11 @@ void Command::sendReply(std::string replyMsg) {
 	std::cout << ">> Sending message to client: " << tmp;
 	if (send(client->getClientFd(), tmp.c_str(), tmp.length(), 0) == -1)
 		throw std::runtime_error("Error sending message");
+}
+
+bool Command::isEnd()
+{
+	if (messageIndex < messageSize)
+		return false;
+	return true;
 }
