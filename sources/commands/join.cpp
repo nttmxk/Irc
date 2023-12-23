@@ -61,11 +61,11 @@ void Command::join(std::map<std::string,Channel*> channelsInServer) {
 	messageIndex += getNumParameter();
 
 	// 벡터 순회하면서 채널에 들어가기
-	for (int i=0; i<channels.size(); i++) {
+	for (std::size_t i=0; i<channels.size(); i++) {
 		// 채널이 서버에 존재하는지 확인, 없으면 새로 생성
 		Channel* channelPtr = isChannelExist(channelsInServer, channels[i]);
 		if (channelPtr == NULL) {
-			Channel* newChannel = new Channel(channels[i]);
+			Channel* newChannel = new Channel(channels[i], client);
 			channelsInServer.insert(make_pair(channels[i], newChannel));
 			channelPtr = newChannel;
 		}
@@ -98,7 +98,7 @@ void Command::join(std::map<std::string,Channel*> channelsInServer) {
 	
 		// join channel
 		channelPtr->isInvitedMember(nick) ? 
-			channelPtr->addInvitedMember(*client) : channelPtr->addMember(*client);
+			channelPtr->addInvitedMember(client) : channelPtr->addMember(client, false);
 
 		// 1. Join Msg -> 채널로 보내는 건가..?
 		std::string joinMsg = USER_ADDR(nick, client->getUserName(), "127.0.0.1") \
@@ -109,19 +109,6 @@ void Command::join(std::map<std::string,Channel*> channelsInServer) {
 		std::string memberListStr = channelPtr->getMemberStr();
 		sendReply(RPL_NAMREPLY(servername, nick, channelPtr->getName(), memberListStr));
 		sendReply(RPL_ENDOFNAMES(servername, nick, channelPtr->getName()));
-
-		// std::vector<std::string>::iterator it; 
-		// std::vector<std::string>::iterator end_it; 
-
-		// it = channelPtr->getOperators().begin();
-		// end_it = channelPtr->getOperators().end();
-		// for ( ; it != end_it; it++) 
-		// 	memberListStr += ("@" + *it + " ");
-
-		// it = channelPtr->getNormalMembers().begin(); 
-		// end_it = channelPtr->getNormalMembers().end();
-		// for ( ; it != end_it; it++) 
-		// 	memberListStr += (*it + " ");
 	}
 }
 
