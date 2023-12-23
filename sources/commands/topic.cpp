@@ -37,7 +37,6 @@ void Command::topic(std::map<std::string, Channel*> channelsInServer) {
 	}
 
     std::string targetChannel = tokens[messageIndex + 1];
-    bool hasNewTopic = getNumParameter() >= 3 ? true : false;
     std::string newTopic = getNumParameter() >= 3 ? tokens[messageIndex + 2] : "";
     messageIndex += getNumParameter();
 
