@@ -8,13 +8,13 @@
 class Client;
 
 # define ChannelModeCnt 5
-typedef enum {
-	INVITE_ONLY,	// Set/remove Invite-only channel
-	TOPIC,			// Set/remove the restrictions of the TOPIC command to channel operators
-	KEY,			// Set/remove the channel key (password)
-	OPER,			// Give/take channel operator privilege
-	USER_LIMIT		// Set/remove the user limit to channel
-} ChannelMode;
+enum {
+	INVITE_ONLY = 0,	// Set/remove Invite-only channel
+	TOPIC,				// Set/remove the restrictions of the TOPIC command to channel operators
+	KEY,				// Set/remove the channel key (password)
+	OPER,				// Give/take channel operator privilege
+	USER_LIMIT			// Set/remove the user limit to channel
+};
 
 static const char channelModeChar[ChannelModeCnt] = {'i', 't', 'k', 'o', 'l'};
 
@@ -31,9 +31,9 @@ private:
 	bool		mode[ChannelModeCnt];
 
 	// 참여가능한 멤버 수 제한
-	int memberLimit;
+	unsigned long memberLimit;
 	// 채널에 속해 있는 모든 멤버 리스트, key: nickname (fd로 수정할 수도...?)
-	std::map<std::string, Client&>	members;
+	std::map<std::string, Client*>	members;
 	// 운영자(operator) 리스트
 	std::vector<std::string>	operators;
 	// 운영자가 아닌 보통 멤버 리스트
@@ -43,7 +43,7 @@ private:
 	Channel();
 
 public:
-	Channel(std::string const &name, Client& creator);
+	Channel(std::string const name, Client* creator);
 	~Channel();
 
 	/* Getter */
@@ -61,12 +61,12 @@ public:
 	
 	/* Member */
 	bool	isInChannel(const std::string targetNick) const;
-	void	addMember(Client& client, bool isOper);
+	void	addMember(Client* client, bool isOper);
 	void	deleteMember(const std::string targetNick); // 멤버가 operator인 경우 deleteOperator 실행해줘야함.
 	bool	isFull();
 
 	bool	isInvitedMember(const std::string targetNick);
-	void	addInvitedMember(Client& client);
+	void	addInvitedMember(Client* client);
 
 	std::string getMemberStr();
 
@@ -76,13 +76,12 @@ public:
 	void	deleteOperator(const std::string targetNick);
 
 	/* Modes */
-	void	onMode(const ChannelMode& mode);
-	void	offMode(const ChannelMode& mode);
-	bool	isModeOn(const char mode);
+	void	onMode(const int modeIdx);
+	void	offMode(const int modeIdx);
+	bool	isModeOn(const char modeChar);
 
 	/* Message Sending */
-	void	sendTo(std::string message, Client& from, std::vector<Client&> to);
-	void	sendToAll(std::string message, Client& from);
+	// void	sendToAll(std::string message, Client& from);
 
 private:
 	/* Normal Member */
