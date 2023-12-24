@@ -12,16 +12,28 @@
 # define CRLF "\r\n"
 
 class Channel;
-// typedef enum ChannelMode;
+
+# define COMMAND_CNT 14
 
 enum CommandType {
-	PASS = 0,
+	CAP = 0,
+	PASS,
 	NICK,
 	USER,
-	COMMAND_CNT
+	cOPER,
+	JOIN,
+	PART,
+	INVITE,
+	KICK,
+	QUIT,
+	cTOPIC,
+	MODE,
+	NOTICE,
+	PRIVMSG
 };
 
-static const std::string commandTypeStr[3] = {"PASS", "NICK", "USER"};
+static const std::string commandTypeStr[COMMAND_CNT] = {"CAP","PASS", "NICK", "USER", "OPER", "JOIN", "PART",
+											  "INVITE", "KICK", "QUIT", "TOPIC", "MODE", "NOTICE", "PRIVMSG"};
 
 class Command {
 private:
@@ -58,7 +70,7 @@ public:
 	void user(std::string time);
 	void oper(std::map<int, Client> clientsInServer, const std::string pwd);
 	void quit();
-	void mode(std::map<int, Channel> channelsInServer);
+	void mode(std::map<std::string, Channel*> channelsInServer);
 
 /* Channel Operations */
 	void join(std::map<std::string,Channel*> channelsInServer);

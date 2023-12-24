@@ -46,6 +46,12 @@ void	Channel::setTopic(std::string newTopic) {
 void	Channel::setKey(std::string newKey) {
 	this->key = newKey;
 }
+
+void	Channel::setMemberLimit(int n) {
+	if (n < 0)
+		n = 0;
+	this->memberLimit = n;
+}
 	
 /* Member */
 bool Channel::isInChannel(const std::string targetNick) const {

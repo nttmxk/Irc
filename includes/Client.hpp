@@ -2,6 +2,7 @@
 # define CLIENT_HPP
 
 # include <string>
+# include <vector>
 
 enum UserMode {
 	OPERATOR = 'O'
