@@ -58,7 +58,7 @@ public:
 	void user(std::string time);
 	void oper(std::map<int, Client> clientsInServer, const std::string pwd);
 	void quit();
-
+	void mode(std::map<int, Channel> channelsInServer);
 
 /* Channel Operations */
 	void join(std::map<std::string,Channel*> channelsInServer);
@@ -103,7 +103,6 @@ public:
 	 * 	- :irc.example.com 324 dan #foobar +nrt
 	 * 	- :irc.example.com 329 dan #foobar 1620807422
 	 */
-	void mode(Channel& channel, std::string modesString) const;
 
 /* Sending Messages */
 
