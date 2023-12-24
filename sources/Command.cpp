@@ -43,7 +43,7 @@ int Command::getCommandType()
 	std::string cmd = tokens[messageIndex];
 	int type = 0;
 
-	for ( ; type < 3; type++) {
+	for ( ; type < COMMAND_CNT; type++) {
 		if (commandTypeStr[type] == cmd)
 			return type;
 	}
@@ -97,8 +97,8 @@ std::vector<std::string> Command::splitByComma(std::string str) {
 }
 
 
-Channel* Command::isChannelExist(std::map<std::string,Channel*> channelsInServer, std::string channelName) {
-	std::map<std::string,Channel*>::iterator channel;
+Channel* Command::isChannelExist(std::map<std::string,Channel*> &channelsInServer, std::string channelName) {
+	std::map<std::string, Channel*>::iterator channel;
 
 	channel = channelsInServer.find(channelName);
 	if (channel == channelsInServer.end())

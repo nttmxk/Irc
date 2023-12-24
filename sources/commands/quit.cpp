@@ -9,10 +9,11 @@
  * client가 서버 접속을 끊음, client가 접속해 있는 모든 채널에서 나감
  */
 void Command::quit() {
-
+	int numParam = getNumParameter();
 	std::string quitMsg = "Quit: ";
-	quitMsg += (getNumParameter() == 1) ? "leaving" : tokens[messageIndex + 1];
+	quitMsg += (numParam == 1) ? "leaving" : tokens[messageIndex + 1];
 
+	messageIndex += numParam + 1;
 	// 참여한 채널에 quitMsg 보내고 나가기
 
 	// 서버에서 나가기

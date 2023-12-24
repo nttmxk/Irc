@@ -1,22 +1,27 @@
 #include "../../includes/Command.hpp"
 
-void Command::mode(std::map<int, Channel> channelsInServer) {
+void Command::mode(std::map<std::string, Channel*> &channelsInServer) {
 	int numParam = getNumParameter();
 	std::string	channelName;
 	std::string modeString;
 	std::string modeArguments[3];
+	std::string servername = "irc.local";
+	std::string nick = client->getNickname();
 
-	if (numParam < 3)
+	if (numParam < 2)
 	{
-		sendReply(ERR_NOSUCHCHANNEL("irc.local", client->getNickname(), channelName));
+		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "MODE"));
 		messageIndex += numParam + 1;
 		return;
 	}
 	channelName = tokens[messageIndex + 1];
 	modeString = tokens[messageIndex + 2];
+
+	std::clog << "[Log] mode:" << channelName << "," << modeString << '\n';
+
 	if (numParam > 6)
 	{
-		sendReply(":irc.local " + client->getNickname() + channelName + " :Too many parameters\r\n"); // Custom?
+		sendReply(":irc.local " + nick + channelName + " :Too many parameters\r\n"); // Custom?
 		messageIndex += numParam + 1;
 		return;
 	}
@@ -31,10 +36,17 @@ void Command::mode(std::map<int, Channel> channelsInServer) {
 		return;
 	if (channelsInServer.find(channelName) == channelsInServer.end())
 	{
-		sendReply(ERR_NOSUCHCHANNEL("irc.local", client->getNickname(), channelName));
+		std::clog << "[Log] mode: chanName:" << channelName << '\n';
+		std::map<std::string, Channel*>::iterator it = channelsInServer.begin();
+		while (it != channelsInServer.end())
+		{
+			std::clog << "ChanList: " << it->first << '\n';
+			it++;
+		}
+		sendReply(ERR_NOSUCHCHANNEL(servername, nick, channelName));
 		return;
 	}
-	Channel channel = channelsInServer[channelName];
+	Channel *channel = channelsInServer[channelName];
 	int argIndex = 0;
 
 	if (modeString[0] == '+')
@@ -46,7 +58,7 @@ void Command::mode(std::map<int, Channel> channelsInServer) {
 				channel->onMode(TOPIC);
 			else if (modeString[i] == 'k')
 			{
-				if (channel->isOperator(client->getNickname()))
+				if (channel->isOperator(nick))
 				{
 					channel->onMode(KEY);
 					channel->setKey(modeArguments[argIndex++]);
@@ -55,13 +67,13 @@ void Command::mode(std::map<int, Channel> channelsInServer) {
 			else if (modeString[i] == 'o')
 			{
 				std::string targetName = modeArguments[argIndex++];
-				if (channel->isOperator(client->getNickname()))
+				if (channel->isOperator(nick))
 					channel->addOperator(targetName);
 			}
 			else if (modeString[i] == 'l')
 			{
 				int n = stoi(modeArguments[argIndex++]);
-				if (channel->isOperator(client->getNickname()))
+				if (channel->isOperator(nick))
 					channel->setMemberLimit(n);
 			}
 		}
@@ -74,7 +86,7 @@ void Command::mode(std::map<int, Channel> channelsInServer) {
 				channel->offMode(TOPIC);
 			else if (modeString[i] == 'k')
 			{
-				if (channel->isOperator(client->getNickname()))
+				if (channel->isOperator(nick))
 				{
 					channel->offMode(KEY);
 					channel->setKey("");
@@ -83,14 +95,15 @@ void Command::mode(std::map<int, Channel> channelsInServer) {
 			else if (modeString[i] == 'o')
 			{
 				std::string targetName = modeArguments[argIndex++];
-				if (channel->isOperator(client->getNickname()))
+				if (channel->isOperator(nick))
 					channel->deleteOperator(targetName);
 			}
 			else if (modeString[i] == 'l')
 			{
-				if (channel->isOperator(client->getNickname()))
-					channel->setMemberLimit("4242"); // memberMax
+				if (channel->isOperator(nick))
+					channel->setMemberLimit(atoi("4242")); // memberMax
 			}
 		}
-	}
+	} else if (numParam == 2)
+		sendReply(RPL_CHANNELMODEIS(servername, nick, channelName, channel->getChannelMode()));
 }

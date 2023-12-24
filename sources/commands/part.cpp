@@ -24,18 +24,19 @@
 * Message Examples:
 *	- :dan-!d@localhost PART #test    ; dan-이 채널 #test를 나감.
 */
-void Command::part(std::map<std::string, Channel*> channelsInServer) {
+void Command::part(std::map<std::string, Channel*> &channelsInServer) {
+	int numParam = getNumParameter();
     std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
-	if (getNumParameter() < 2) {
+	if (numParam < 2) {
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "PART"));
 		return;
 	}
 	
 	std::vector<std::string> channels = splitByComma(tokens[messageIndex + 1]);
-	std::string reason = (getNumParameter() > 2) ? tokens[messageIndex + 2] : "";
-	messageIndex += getNumParameter();
+	std::string reason = (numParam > 2) ? tokens[messageIndex + 2] : "";
+	messageIndex += numParam + 1;
 
     std::vector<std::string>::iterator it = channels.begin();
     for ( ; it != channels.end(); it++) {
@@ -59,8 +60,6 @@ void Command::part(std::map<std::string, Channel*> channelsInServer) {
                                 + " invite " + targetChannel = "\r\n";
         // 채널로 이 메세지 보내야함
         channelPtr->deleteMember(nick);
-        
     }
-
 }
 

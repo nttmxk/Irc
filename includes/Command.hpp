@@ -12,16 +12,30 @@
 # define CRLF "\r\n"
 
 class Channel;
-// typedef enum ChannelMode;
+
+# define COMMAND_CNT 16
 
 enum CommandType {
-	PASS = 0,
+	CAP = 0,
+	PASS,
 	NICK,
 	USER,
-	COMMAND_CNT
+	cOPER,
+	JOIN,
+	PART,
+	INVITE,
+	KICK,
+	QUIT,
+	cTOPIC,
+	MODE,
+	NOTICE,
+	PRIVMSG,
+	PING,
+	WHO
 };
 
-static const std::string commandTypeStr[3] = {"PASS", "NICK", "USER"};
+static const std::string commandTypeStr[COMMAND_CNT] = {"CAP","PASS", "NICK", "USER", "OPER", "JOIN", "PART",
+											  "INVITE", "KICK", "QUIT", "TOPIC", "MODE", "NOTICE", "PRIVMSG", "PING", "WHO"};
 
 class Command {
 private:
@@ -48,7 +62,7 @@ private:
 	void sendReply(std::string);
 	int	getParamsCnt();
 	std::vector<std::string> splitByComma(std::string str);
-	Channel* isChannelExist(std::map<std::string,Channel*> channelsInServer, std::string channelName);
+	Channel* isChannelExist(std::map<std::string,Channel*> &channelsInServer, std::string channelName);
 
 public:
 
@@ -56,16 +70,18 @@ public:
 	void pass(const std::string pwd);
 	void nick(std::map<int, Client*> &clients);
 	void user(std::string time);
-	void oper(std::map<int, Client> clientsInServer, const std::string pwd);
+	void oper(std::map<int, Client*> &clientsInServer, const std::string pwd);
 	void quit();
-	void mode(std::map<int, Channel> channelsInServer);
+	void mode(std::map<std::string, Channel*> &channelsInServer);
+	void ping();
 
 /* Channel Operations */
-	void join(std::map<std::string,Channel*> channelsInServer);
-	void part(std::map<std::string, Channel*> channelsInServer);
-	void topic(std::map<std::string, Channel*> channelsInServer);
-	void invite(std::map<std::string,Channel*> channelsInServer);
-	void kick(std::map<std::string, Channel*> channelsInServer);
+	void join(std::map<std::string,Channel*> &channelsInServer);
+	void who(std::map<std::string,Channel*> &channelsInServer);
+	void part(std::map<std::string, Channel*> &channelsInServer);
+	void topic(std::map<std::string, Channel*> &channelsInServer);
+	void invite(std::map<std::string,Channel*> &channelsInServer);
+	void kick(std::map<std::string, Channel*> &channelsInServer);
 
 /* Server Queries and Commands */
 	// https://modern.ircdocs.horse/#mode-message 내용이 너무 많아서... 링크 달아둘게요

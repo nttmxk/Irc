@@ -42,63 +42,64 @@
 *	- :WiZ JOIN #Twilight_zone        ; WiZ가 채널 #Twilight_zone에 참여.
 *	- :dan-!d@localhost JOIN #test    ; dan-이 채널 #test에 참여.
 */
-void Command::join(std::map<std::string,Channel*> channelsInServer) {
+void Command::join(std::map<std::string,Channel*> &channelsInServer) {
+	int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
-	if (getNumParameter() < 2) {
+	if (numParam < 2) {
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "JOIN"));
 		return;
 	}
-	
+	std::clog << "[Log] join:" << '\n';
+
 	std::vector<std::string> channels;
 	std::vector<std::string> keys;
-	bool hasKeys = getNumParameter() >= 3;
+	bool hasKeys = numParam >= 3;
 	
 	channels = splitByComma(tokens[messageIndex + 1]);
 	if (hasKeys)
 		keys = splitByComma(tokens[messageIndex + 2]);
-	messageIndex += getNumParameter();
+	messageIndex += numParam + 1;
 
 	// 벡터 순회하면서 채널에 들어가기
-	for (std::size_t i=0; i<channels.size(); i++) {
+	for (std::size_t i=0; i < channels.size(); i++) {
 		// 채널이 서버에 존재하는지 확인, 없으면 새로 생성
 		Channel* channelPtr = isChannelExist(channelsInServer, channels[i]);
 		if (channelPtr == NULL) {
+			std::clog << "[Log] join: make a new channel: " << channels[i] << "\n";
 			Channel* newChannel = new Channel(channels[i], client);
 			channelsInServer.insert(make_pair(channels[i], newChannel));
 			channelPtr = newChannel;
 		}
+		else {
+			// 채널에 key가 설정되어 있다면, 입력받은 key와 일치하는지 확인
+			if (channelPtr->isModeOn('k')) {
+				std::string keyOfChannel = channelPtr->getKey();
+				if (i >= keys.size()) {
+					sendReply(ERR_BADCHANNELKEY(servername, nick, channelPtr->getName()));
+					return;
+				} else if (keys[i] != keyOfChannel) {
+					sendReply(ERR_BADCHANNELKEY(servername, nick, channelPtr->getName()));
+					return;
+				}
+			}
 
-		// 채널에 key가 설정되어 있다면, 입력받은 key와 일치하는지 확인
-		if (channelPtr->isModeOn('k')) {
-			std::string keyOfChannel = channelPtr->getKey();
-			if (i >= keys.size()) {
-				sendReply(ERR_BADCHANNELKEY(servername, nick, channelPtr->getName()));
+			// 채널이 가득 찼는지 확인
+			if (channelPtr->isFull()) {
+				sendReply(ERR_CHANNELISFULL(servername, nick, channelPtr->getName()));
 				return;
 			}
-			else if (keys[i] != keyOfChannel) {
-				sendReply(ERR_BADCHANNELKEY(servername, nick, channelPtr->getName()));
+
+			// 초대 전용 채널인지 확인
+			if (channelPtr->isModeOn('i') && channelPtr->isInvitedMember(nick) == false) {
+				sendReply(ERR_INVITEONLYCHAN(servername, nick, channelPtr->getName()));
 				return;
 			}
-		}
-
-		// 채널이 가득 찼는지 확인
-		if (channelPtr->isFull()) {
-			sendReply(ERR_CHANNELISFULL(servername, nick, channelPtr->getName()));
-			return;
-		}
-
-		// 초대 전용 채널인지 확인
-		if (channelPtr->isModeOn('i') && channelPtr->isInvitedMember(nick) == false) {
-			sendReply(ERR_INVITEONLYCHAN(servername, nick, channelPtr->getName()));
-			return;
-		}
-	
-	
-		// join channel
-		channelPtr->isInvitedMember(nick) ? 
+			// join channel
+			channelPtr->isInvitedMember(nick) ?
 			channelPtr->addInvitedMember(client) : channelPtr->addMember(client, false);
+		}
 
 		// 1. Join Msg -> 채널로 보내는 건가..?
 		std::string joinMsg = USER_ADDR(nick, client->getUserName(), "127.0.0.1") \

@@ -27,18 +27,19 @@
 *	- TOPIC #test :                   ; "#test" 채널의 토픽을 지움.
 *	- TOPIC #test                     ; "#test" 채널의 토픽을 확인.
 */
-void Command::topic(std::map<std::string, Channel*> channelsInServer) {
-    std::string servername = "irc.local";
+void Command::topic(std::map<std::string, Channel*> &channelsInServer) {
+    int numParam = getNumParameter();
+	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
-	if (getNumParameter() < 2) {
+	if (numParam < 2) {
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "TOPIC"));
 		return;
 	}
 
     std::string targetChannel = tokens[messageIndex + 1];
-    std::string newTopic = getNumParameter() >= 3 ? tokens[messageIndex + 2] : "";
-    messageIndex += getNumParameter();
+    std::string newTopic = numParam >= 3 ? tokens[messageIndex + 2] : "";
+    messageIndex += numParam + 1;
 
     // 타겟 채널이 서버에 존재하는지 확인
     Channel* channelPtr = isChannelExist(channelsInServer, targetChannel);

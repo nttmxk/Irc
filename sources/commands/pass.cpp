@@ -14,11 +14,6 @@ void Command::pass(const std::string pwd) {
 	const std::string servername = "irc.local";
 	const std::string nick = this->client->getNickname();
 
-	std::clog << "Parse Test\n";
-	for (int i = 0; i < tokenSize; ++i) {
-		std::clog << i << ":" << tokens[i] << '\n';
-	}
-
 	std::string password = this->tokens[messageIndex + 1];
 	messageIndex += numParam + 1;
 	std::clog << "[Log] pass:" << password << '\n';
