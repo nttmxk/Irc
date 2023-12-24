@@ -92,21 +92,23 @@
 // ERR_NOOPERHOST (491)			// oper
 # define ERR_NOOPERHOST(servername, nick) \
 	":" + servername + " 491 " + nick + " :No O-lines for your host\r\n"
+// ERR_CANNOTSENDTOCHAN (404)	// privmsg
+# define ERR_CANNOTSENDTOCHAN(servername, nick, channel) \
+	":" + servername + " 404 " + nick + " " + channel + " :Cannot send to channel\r\n"
+// ERR_NOTEXTTOSEND (412)		// privmsg
+# define ERR_NOTEXTTOSEND(servername, nick) \
+	":" + servername + " 412 " + nick + " :No text to send\r\n"
 
 /*
 RPL_UMODEIS (221)			// mode
 RPL_AWAY (301)				// privmsg
 RPL_CREATIONTIME (329)		// mode
-
 ERR_NOSUCHSERVER (402)		// privmsg
-ERR_CANNOTSENDTOCHAN (404)	// privmsg
 ERR_TOOMANYCHANNELS (405)	// join
 ERR_TOOMANYTARGETS (407)	// privmsg
 ERR_NORECIPIENT (411)		// privmsg
-ERR_NOTEXTTOSEND (412)		// privmsg
 ERR_NOTOPLEVEL (413)		// privmsg
 ERR_WILDTOPLEVEL (414)		// privmsg
-
 ERR_NICKCOLLISION (436)		// nick
 
 
