@@ -1,6 +1,6 @@
 #include "../../includes/Command.hpp"
 
-void Command::mode(std::map<std::string, Channel*> channelsInServer) {
+void Command::mode(std::map<std::string, Channel*> &channelsInServer) {
 	int numParam = getNumParameter();
 	std::string	channelName;
 	std::string modeString;
@@ -8,14 +8,17 @@ void Command::mode(std::map<std::string, Channel*> channelsInServer) {
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
-	if (numParam < 3)
+	if (numParam < 2)
 	{
-		sendReply(ERR_NOSUCHCHANNEL(servername, nick, channelName));
+		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "MODE"));
 		messageIndex += numParam + 1;
 		return;
 	}
 	channelName = tokens[messageIndex + 1];
 	modeString = tokens[messageIndex + 2];
+
+	std::clog << "[Log] mode:" << channelName << "," << modeString << '\n';
+
 	if (numParam > 6)
 	{
 		sendReply(":irc.local " + nick + channelName + " :Too many parameters\r\n"); // Custom?
@@ -33,6 +36,13 @@ void Command::mode(std::map<std::string, Channel*> channelsInServer) {
 		return;
 	if (channelsInServer.find(channelName) == channelsInServer.end())
 	{
+		std::clog << "[Log] mode: chanName:" << channelName << '\n';
+		std::map<std::string, Channel*>::iterator it = channelsInServer.begin();
+		while (it != channelsInServer.end())
+		{
+			std::clog << "ChanList: " << it->first << '\n';
+			it++;
+		}
 		sendReply(ERR_NOSUCHCHANNEL(servername, nick, channelName));
 		return;
 	}
@@ -94,5 +104,6 @@ void Command::mode(std::map<std::string, Channel*> channelsInServer) {
 					channel->setMemberLimit(atoi("4242")); // memberMax
 			}
 		}
-	}
+	} else if (numParam == 2)
+		sendReply(RPL_CHANNELMODEIS(servername, nick, channelName, channel->getChannelMode()));
 }

@@ -3,7 +3,10 @@
 
 # define USER_ADDR(nickname, username, hostname) \
 	nickname + "!" + username + "@" + hostname
-	
+
+# define RPL_PONG(servername, ip) \
+	":" + servername + " PONG :" + ip + "\r\n"
+
 # define RPL_WELCOME(servername, nick) \
 	":" + servername + " 001 " + nick + " :Welcome to the Internet Relay Network " + nick + "\r\n"
 # define RPL_YOURHOST(servername, nick, version) \
@@ -18,6 +21,8 @@
 // RPL_CHANNELMODEIS (324)		// mode
 # define RPL_CHANNELMODEIS(servername, nick, channel, modes) \
 	":" + servername + " 324 " + nick + " " + channel + " :+" + modes + "\r\n"
+// RPL_CREATIONTIME (329)		// mode
+//# define RPL_CREATIONTIME() \
 // RPL_NOTOPIC (331)			// topic
 # define RPL_NOTOPIC(servername, nick, channel) \
 	":" + servername + " 331 " + nick + " " + channel + " :No topic is set\r\n"
@@ -35,7 +40,7 @@
 	":" + servername + " 353 " + nick + " = " + channel + " :" + users + "\r\n"
 // RPL_ENDOFNAMES (366)			// join
 # define RPL_ENDOFNAMES(servername, nick, channel) \
-	":" + servername + " 366 " + nick + " #" + channel + " :End of /NAMES list\r\n"
+	":" + servername + " 366 " + nick + " " + channel + " :End of /NAMES list\r\n"
 // RPL_YOUREOPER (381)			// oper
 # define RPL_YOUREOPER(servername, nick) \
 	":" + servername + " 381 " + nick + " :You are now an IRC operator\r\n"

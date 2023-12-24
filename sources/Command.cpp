@@ -97,8 +97,8 @@ std::vector<std::string> Command::splitByComma(std::string str) {
 }
 
 
-Channel* Command::isChannelExist(std::map<std::string,Channel*> channelsInServer, std::string channelName) {
-	std::map<std::string,Channel*>::iterator channel;
+Channel* Command::isChannelExist(std::map<std::string,Channel*> &channelsInServer, std::string channelName) {
+	std::map<std::string, Channel*>::iterator channel;
 
 	channel = channelsInServer.find(channelName);
 	if (channel == channelsInServer.end())

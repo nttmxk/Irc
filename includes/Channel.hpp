@@ -50,6 +50,7 @@ public:
 	std::string						getName();
 	std::string						getKey();	
 	std::string						getTopic();
+	std::string 					getChannelMode();
 	// const int						getMemberLimit();
 	// std::map <std::string, Client&>	getMembers();
 	// std::vector<std::string>		getOperators();

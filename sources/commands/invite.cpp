@@ -20,18 +20,19 @@
 * Message Examples:
 *	- :dan-!d@localhost INVITE Wiz #test    ; dan-이 Wiz를 #test 채널로 초대함.
 */
-void Command::invite(std::map<std::string, Channel*> channelsInServer) {
-    std::string servername = "irc.local";
+void Command::invite(std::map<std::string, Channel*> &channelsInServer) {
+    int numParam = getNumParameter();
+	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
-	if (getNumParameter() < 3) {
+	if (numParam < 3) {
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "INVITE"));
 		return;
 	}
 
     std::string targetNick = tokens[messageIndex + 1];
     std::string targetChannel = tokens[messageIndex + 2];
-    messageIndex += getNumParameter();
+    messageIndex += numParam + 1;
 
     
     // 타겟 채널이 서버에 존재하는지 확인

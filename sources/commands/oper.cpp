@@ -2,11 +2,11 @@
 #include <map>
 
 // 서버 클라이언트 리스트에서 타겟 유저 찾아서 객체 포인터를 리턴, 없으면 NULL 리턴
-static Client* searchByNickname(std::string nickname, std::map<int, Client> clients) {
-	std::map<int, Client>::iterator it = clients.begin();	
+static Client* searchByNickname(std::string nickname, std::map<int, Client*> clients) {
+	std::map<int, Client*>::iterator it = clients.begin();
 	for( ; it != clients.end(); it++) {
-		if (it->second.getNickname() == nickname) {
-			return &(it->second);
+		if (it->second->getNickname() == nickname) {
+			return it->second;
 		}
 	}
 	return NULL;
@@ -44,17 +44,19 @@ static bool isValidPassword(const Client* client, const std::string password, co
  * not connecting from a valid host for the given name, 491 보낸 후 fail 처리
  * 성공 시(name, password가 correct, 유효한 host에서 연결 중), 381을 user에게 보냄
  */
-void Command::oper(std::map<int, Client> clientsInServer, const std::string pwd) {
+void Command::oper(std::map<int, Client*> &clientsInServer, const std::string pwd) {
+	int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
-	if (getNumParameter() < 3) {
+	if (numParam < 3) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "OPER"));
 		return;
 	}
 
 	std::string targetNick = tokens[messageIndex + 1];
 	std::string password = tokens[messageIndex + 2];
+	messageIndex += numParam + 1;
 	Client* target = searchByNickname(targetNick, clientsInServer);
 
 	if (isValidName(target) == false) {

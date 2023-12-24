@@ -37,6 +37,19 @@ std::string Channel::getTopic() {
 	return this->topic;
 }
 
+std::string Channel::getChannelMode() {
+	std::string modes;
+	if (mode[INVITE_ONLY])
+		modes += 'i';
+	if (mode[TOPIC])
+		modes += 't';
+	if (mode[KEY])
+		modes += 'k';
+	if (mode[USER_LIMIT])
+		modes += 'l';
+	return modes;
+}
+
 
 /* Setter */
 void	Channel::setTopic(std::string newTopic) {
@@ -61,7 +74,7 @@ bool Channel::isInChannel(const std::string targetNick) const {
 
 void Channel::addMember(Client* client, bool isOper) {
 	std::string nickname = client->getNickname();
-	if (isInChannel(nickname) == false)
+	if (!isInChannel(nickname))
 		this->members.insert(std::make_pair(nickname, client));
 	isOper ? addOperator(nickname) : addNormalMember(nickname);
 }
@@ -115,7 +128,7 @@ bool Channel::isOperator(const std::string targetNick) const {
 }
 
 void Channel::addOperator(const std::string targetNick) {
-	if (isOperator(targetNick) == false) {
+	if (!isOperator(targetNick)) {
 		deleteNormalMember(targetNick);
 		this->operators.push_back(targetNick);
 	}
@@ -140,16 +153,14 @@ bool Channel::isModeOn(const char modeChar) {
 		if (modeChar == channelModeChar[idx])
 			break;
 	}
-
 	return idx < ChannelModeCnt ? mode[idx] : false;
 }
 
 /* Normal Member */
 void Channel::addNormalMember(const std::string targetNick) {
-	if (isOperator(targetNick)) {
+	if (isOperator(targetNick))
 		deleteOperator(targetNick);
-		this->normalMembers.push_back(targetNick);
-	}
+	this->normalMembers.push_back(targetNick);
 }
 
 void Channel::deleteNormalMember(const std::string targetNick) {

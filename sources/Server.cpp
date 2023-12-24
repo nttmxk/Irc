@@ -85,7 +85,7 @@ void Server::readMessage(int clientFd) {
 //	std::clog << "Message from " << clientFd << " with rSize: " << readSize << '\n' << buffer << '\n';
 	if (readSize == 0)
 	{
-		std::clog << "[Log] " << clientFd << ": Quit\n";
+		std::clog << "[Log] rSize=0 " << clientFd << ": Quit\n";
 		message[clientFd] = "QUIT :disconnected\r\n";
 		runCommand(clientFd);
 		deleteClient(clientFd);
@@ -93,7 +93,7 @@ void Server::readMessage(int clientFd) {
 	else if (readSize > 1 && buffer[readSize - 2] == '\r' && buffer[readSize - 1] == '\n')
 	{
 		message[clientFd].append(buffer);
-		std::clog << "[Log] " << clientFd << ": \n" << message[clientFd] << '\n';
+		std::clog << "[Log] " << clientFd << ":New message\n" << message[clientFd] << '\n';
 		runCommand(clientFd);
 		message[clientFd].clear();
 		// when runCommand executes <QUIT>... then setPoll and close should be called here too?
@@ -110,6 +110,9 @@ void Server::runCommand(int clientFd) {
 	while (!command.isTokenEnd()) {
 		type = command.getCommandType();
 		switch (type) {
+			case (CAP):
+				command.passCommand();
+				break;
 			case (PASS):
 				command.pass(_pwd);
 				break;
@@ -118,6 +121,44 @@ void Server::runCommand(int clientFd) {
 				break;
 			case (USER):
 				command.user(startTime);
+				break;
+			case (cOPER):
+				command.oper(clients, _pwd); // param fix needed
+				break;
+			case (JOIN):
+				command.join(channels);
+				break;
+			case (PART):
+				command.part(channels);
+				break;
+			case (INVITE):
+				command.invite(channels);
+				break;
+			case (KICK):
+				command.kick(channels);
+				break;
+			case (QUIT):
+				command.quit();
+				break;
+			case (cTOPIC):
+				command.topic(channels);
+				break;
+			case (MODE):
+				command.mode(channels);
+				break;
+			case (NOTICE):
+				command.passCommand();
+//				command.notice();
+				break;
+			case (PRIVMSG):
+				command.passCommand();
+//				command.privmsg();
+				break;
+			case (PING):
+				command.ping();
+				break;
+			case (WHO):
+				command.who(channels);
 				break;
 			default :
 				noCommand = true;
