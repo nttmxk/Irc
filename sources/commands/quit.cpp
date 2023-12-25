@@ -9,6 +9,8 @@
  * client가 서버 접속을 끊음, client가 접속해 있는 모든 채널에서 나감
  */
 void Command::quit(std::map<std::string, Channel*> &channelsInServer) {
+	if (client->getFlag() != _connect)
+		return;
 	int numParam = getNumParameter();
 	std::vector<std::string> joinedChannels = client->getJoinedChannels();
 	std::string nick = client->getNickname();

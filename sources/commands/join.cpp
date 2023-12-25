@@ -43,6 +43,8 @@
 *	- :dan-!d@localhost JOIN #test    ; dan-이 채널 #test에 참여.
 */
 void Command::join(std::map<std::string,Channel*> &channelsInServer) {
+	if (client->getFlag() != _connect)
+		return;
 	int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();

@@ -8,6 +8,12 @@ enum UserMode {
 	OPERATOR = 'O'
 };
 
+enum UserFlag {
+	_init = 0,
+	_pass,
+	_nick,
+	_connect
+};
 
 class Client {
 private:
@@ -15,32 +21,26 @@ private:
  	std::string nickname;   
 	std::string	userName;
 	std::string realName;
-//	std::string	password;
 	std::string modeStr;
-
-	bool		_authorized;
+	int			_flag;
 
 	std::vector<std::string> joinedChannels;
 
-	Client();
-
 public:
     Client(int _fd);
-    // Client(int _fd, std::string _nickname);
     ~Client();
 
     int         getClientFd() const;
  	std::string getNickname() const;   
 	std::string getUserName() const;
 	std::string getRealName() const;
-//	std::string	getPassword() const;
-//	std::string getUserMode() const;
 	std::vector<std::string> getJoinedChannels() const;
+	int 		getFlag() const;
 
     void    setNickname(const std::string nickname);
 	void	setUserName(const std::string userName);
     void    setRealName(const std::string realName);
-	void	setAuthorization();
+	void	setFlag(int flag);
 
 	void	joinChannel(std::string channelName);
 	void	quitChannel(std::string channelName);

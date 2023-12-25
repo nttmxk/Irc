@@ -25,6 +25,8 @@
 *	- :dan-!d@localhost PART #test    ; dan-이 채널 #test를 나감.
 */
 void Command::part(std::map<std::string, Channel*> &channelsInServer) {
+	if (client->getFlag() != _connect)
+		return;
 	int numParam = getNumParameter();
     std::string servername = "irc.local";
 	std::string nick = client->getNickname();

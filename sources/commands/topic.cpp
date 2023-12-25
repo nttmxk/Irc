@@ -28,6 +28,8 @@
 *	- TOPIC #test                     ; "#test" 채널의 토픽을 확인.
 */
 void Command::topic(std::map<std::string, Channel*> &channelsInServer) {
+	if (client->getFlag() != _connect)
+		return;
     int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();

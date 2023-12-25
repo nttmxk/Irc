@@ -2,6 +2,8 @@
 
 
 void Command::ping() {
+	if (client->getFlag() != _connect)
+		return;
 	int numParam = getNumParameter();
 	const std::string servername = "irc.local";
 	const std::string nick = this->client->getNickname();
@@ -13,7 +15,5 @@ void Command::ping() {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "PING"));
 		return;
 	}
-
-	if (this->client->isAuthorized())
-		this->sendReply(RPL_PONG(servername, ip));
+	this->sendReply(RPL_PONG(servername, ip));
 } 

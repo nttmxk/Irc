@@ -34,6 +34,8 @@ static bool isValidPassword(const Client* client, const std::string password, co
  * 성공 시(name, password가 correct, 유효한 host에서 연결 중), 381을 user에게 보냄
  */
 void Command::oper(std::map<int, Client*> &clientsInServer, const std::string pwd) {
+	if (client->getFlag() != _connect)
+		return;
 	int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();

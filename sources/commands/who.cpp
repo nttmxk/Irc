@@ -1,6 +1,8 @@
 #include "../../includes/Command.hpp"
 
 void Command::who(std::map<std::string,Channel*> &channelsInServer) {
+	if (client->getFlag() != _connect)
+		return;
 	int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();

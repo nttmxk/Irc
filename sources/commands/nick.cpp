@@ -55,6 +55,8 @@ static bool isNicknameAlreadyInUse(const int client_fd, const std::string nickna
  * 닉네임 변경 성공 시, <old nickname>!<user>@localhost NICK <new nickname> 출력 ex) oldhio!root@127.0.0.1 NICK newhio
  */
 void Command::nick(std::map<int, Client*> &clients, std::map<std::string, Channel*> &channelsInServer) {
+	if (client->getFlag() < _pass)
+		return;
 	int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
@@ -85,6 +87,9 @@ void Command::nick(std::map<int, Client*> &clients, std::map<std::string, Channe
                                 + " NICK :" + newNickname + "\r\n";
 	client->setNickname(newNickname);
 	sendReply(nickMsg);
+	if (client->getFlag() == _pass)
+		client->setFlag(_nick);
+
 	if (client->isAuthorized()) {
 		std::vector <std::string> joinedChannels = client->getJoinedChannels();
 		std::vector<std::string>::iterator it = joinedChannels.begin();

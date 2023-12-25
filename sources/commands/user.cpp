@@ -17,6 +17,9 @@ void Command::user(std::string time) {
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
+	if (client->getFlag() < _nick)
+		return;
+
 	if (numParam < 5) {
 		messageIndex += numParam + 1;
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "USER"));
@@ -38,7 +41,7 @@ void Command::user(std::string time) {
 
 	client->setUserName(userName);
 	client->setRealName(realName);
-	client->setAuthorization();
+	client->setFlag(_connect);
 	this->sendReply(RPL_WELCOME(servername, nick));
 	this->sendReply(RPL_YOURHOST(servername, nick, "42.42.42"));
 	this->sendReply(RPL_CREATED(servername, nick, time));

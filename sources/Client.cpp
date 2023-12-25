@@ -3,8 +3,7 @@
 
 Client::Client(int _fd) 
 	: client_fd(_fd), 
-	  nickname(""), userName(""), realName(""), 
-	  _authorized(false) {}
+	  nickname(""), userName(""), realName(""), _flag(_init) {}
 
 Client::~Client() {}
 
@@ -24,6 +23,10 @@ std::string Client::getRealName() const {
 	return this->realName;
 }
 
+int Client::getFlag() const {
+	return _flag;
+}
+
 std::vector<std::string> Client::getJoinedChannels() const {
 	return joinedChannels;
 }
@@ -40,8 +43,8 @@ void Client::setRealName(const std::string realName) {
 	this->realName = realName;
 }
 
-void Client::setAuthorization() {
-	this->_authorized = true;
+void Client::setFlag(int flag) {
+	_flag = flag;
 }
 
 void Client::joinChannel(std::string channelName) {
@@ -57,7 +60,7 @@ void Client::quitAllChannels() {
 }
 
 bool Client::isAuthorized() const {
-	return this->_authorized;
+	return (_flag == _connect);
 }
 
 bool Client::isServerOper() const {
