@@ -29,7 +29,6 @@ public:
 	struct pollfd	*getPollFds(void);
 	void			addClient(void);
 	void			readMessage(int clientFd);
-	void			runCommand(int clientFd);
 
 private:
 	int				serverFd;
@@ -42,8 +41,9 @@ private:
 	std::map<std::string, Channel *>	channels;
 	std::string							_pwd;
 
-	void setPoll(int index, int fd, short events, short revents);
-	void deleteClient(int clientFd);
+	void	setPoll(int index, int fd, short events, short revents);
+	void	runCommand(int clientFd);
+	void	deleteClient(int clientFd);
 };
 
 #endif
