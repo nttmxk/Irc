@@ -125,6 +125,10 @@ std::string Channel::getMemberStr() {
 	return ret;
 }
 
+std::map<std::string, Client*>& Channel::getMembers() {
+	return members;
+}
+
 /* Operator */
 bool Channel::isOperator(const std::string targetNick) const {
 //	std::clog << "[Log] isOperator\n";

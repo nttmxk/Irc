@@ -149,8 +149,8 @@ void Server::runCommand(int clientFd) {
 //				command.notice();
 				break;
 			case (PRIVMSG):
-				command.passCommand();
-//				command.privmsg();
+				// command.passCommand();
+				command.privmsg(clients, channels);
 				break;
 			case (PING):
 				command.ping();
