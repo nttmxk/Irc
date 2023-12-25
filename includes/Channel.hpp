@@ -61,6 +61,7 @@ public:
 	/* Member */
 	bool isInChannel(const std::string targetNick) const;
 	void addMember(Client *client, bool isOper);
+	void addInvitedList(std::string targetNick);
 	void addInvitedMember(Client *client);
 	void deleteMember(const std::string targetNick); // 멤버가 operator인 경우 deleteOperator 실행해줘야함.
 
