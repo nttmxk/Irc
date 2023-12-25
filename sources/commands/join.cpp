@@ -56,7 +56,7 @@ void Command::join(std::map<std::string, Channel *> &channelsInServer) {
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "JOIN"));
 		return;
 	}
-	std::clog << "[Log] join:" << tokens[messageIndex + 1] << '\n';
+//	std::clog << "[Log] join:" << tokens[messageIndex + 1] << '\n';
 
 	std::vector <std::string> channels;
 	std::vector <std::string> keys;
@@ -72,7 +72,7 @@ void Command::join(std::map<std::string, Channel *> &channelsInServer) {
 		// 채널이 서버에 존재하는지 확인, 없으면 새로 생성
 		Channel *channelPtr = isChannelExist(channelsInServer, channels[i]);
 		if (channelPtr == NULL) {
-			std::clog << "[Log] join: make a new channel: " << channels[i] << "\n";
+//			std::clog << "[Log] join: make a new channel: " << channels[i] << "\n";
 			Channel *newChannel = new Channel(channels[i], client);
 			channelsInServer.insert(make_pair(channels[i], newChannel));
 			channelPtr = newChannel;
