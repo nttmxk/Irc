@@ -75,7 +75,9 @@ void Command::topic(std::map<std::string, Channel *> &channelsInServer) {
 
 	channelPtr->setTopic(newTopic);
 	std::string setTimeStr = std::to_string(std::time(nullptr));
-	sendReply(RPL_TOPIC(servername, nick, targetChannel, newTopic));
+	std::string topicMsg = RPL_TOPIC(servername, nick, targetChannel, newTopic);
+	sendReply(topicMsg);
+	sendToChannel(nick, topicMsg, channelPtr);
 	sendReply(RPL_TOPICWHOTIME(servername, nick, targetChannel,
 							   USER_ADDR(nick, client->getUserName(), "irc.local"), setTimeStr));
 }

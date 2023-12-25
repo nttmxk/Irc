@@ -30,7 +30,7 @@
 	":" + servername + " 331 " + nick + " " + channel + " :No topic is set\r\n"
 // RPL_TOPIC (332)				// join, topic
 # define RPL_TOPIC(servername, nick, channel, topic) \
-	":" + servername + " 332 " + nick + " " + channel + " :" + topic + "\r\n"
+	":" + servername + " 332 " + nick + " " + channel + " " + topic + "\r\n"
 // RPL_TOPICWHOTIME (333)		// join, topic
 # define RPL_TOPICWHOTIME(servername, nick, channel, userAddr, time) \
 	":" + servername + " 333 " + nick + " " + channel + " " + userAddr + " :" + time + "\r\n"
