@@ -86,7 +86,7 @@ void Command::mode(std::map<std::string, Channel *> &channelsInServer) {
 				}
 			} else if (modeString[i] == 'o') {
 				std::string targetName = modeArguments[argIndex++];
-				channel->deleteOperator(targetName);
+				channel->addNormalMember(targetName);
 			} else if (modeString[i] == 'l') {
 				channel->offMode(USER_LIMIT);
 				channel->setMemberLimit(atoi("-1")); // memberMax
