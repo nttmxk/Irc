@@ -88,6 +88,9 @@ void Command::mode(std::map<std::string, Channel *> &channelsInServer) {
 			if (modeString[i] == 'i')
 				channel->offMode(INVITE_ONLY);
 			else if (modeString[i] == 't') {
+				std::string topicMsg = RPL_NOTOPIC(servername, nick, channelName);
+				sendByFD(client->getClientFd(), topicMsg);
+				sendToChannel(nick, topicMsg, channel);
 				channel->offMode(TOPIC);
 				channel->setTopic("");
 			}
