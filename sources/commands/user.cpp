@@ -14,6 +14,10 @@
  */
 void Command::user(std::string time) {
 	int numParam = getNumParameter();
+	if (client->getFlag() < _nick) {
+		messageIndex += numParam + 1;
+		return;
+	}
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
@@ -25,12 +29,12 @@ void Command::user(std::string time) {
 	std::string userName = tokens[messageIndex + 2];
 	std::string realName = tokens[messageIndex + 4];
 	messageIndex += numParam + 1;
-	std::clog << "[Log] user:" << userName << "," << realName << '\n';
+//	std::clog << "[Log] user:" << userName << "," << realName << '\n';
 
 	if (userName.length() < 1 || realName.length() < 1) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "USER"));
 		return;
-	} 
+	}
 	if (client->isAuthorized()) {
 		this->sendReply(ERR_ALREADYREGISTRED(servername, nick));
 		return;
@@ -38,7 +42,7 @@ void Command::user(std::string time) {
 
 	client->setUserName(userName);
 	client->setRealName(realName);
-	client->setAuthorization();
+	client->setFlag(_connect);
 	this->sendReply(RPL_WELCOME(servername, nick));
 	this->sendReply(RPL_YOURHOST(servername, nick, "42.42.42"));
 	this->sendReply(RPL_CREATED(servername, nick, time));

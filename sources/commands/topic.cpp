@@ -27,8 +27,12 @@
 *	- TOPIC #test :                   ; "#test" 채널의 토픽을 지움.
 *	- TOPIC #test                     ; "#test" 채널의 토픽을 확인.
 */
-void Command::topic(std::map<std::string, Channel*> &channelsInServer) {
-    int numParam = getNumParameter();
+void Command::topic(std::map<std::string, Channel *> &channelsInServer) {
+	int numParam = getNumParameter();
+	if (client->getFlag() != _connect) {
+		messageIndex += numParam + 1;
+		return;
+	}
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
@@ -38,32 +42,31 @@ void Command::topic(std::map<std::string, Channel*> &channelsInServer) {
 		return;
 	}
 
-    std::string targetChannel = tokens[messageIndex + 1];
-    std::string newTopic = numParam >= 3 ? tokens[messageIndex + 2] : "";
-    messageIndex += numParam + 1;
+	std::string targetChannel = tokens[messageIndex + 1];
+	std::string newTopic = numParam >= 3 ? tokens[messageIndex + 2] : "";
+	messageIndex += numParam + 1;
 
-    // 타겟 채널이 서버에 존재하는지 확인
-    Channel* channelPtr = isChannelExist(channelsInServer, targetChannel);
-    if (channelPtr == NULL) {
-        sendReply(ERR_NOSUCHCHANNEL(servername, nick, targetChannel));
+	// 타겟 채널이 서버에 존재하는지 확인
+	Channel *channelPtr = isChannelExist(channelsInServer, targetChannel);
+	if (channelPtr == NULL) {
+		sendReply(ERR_NOSUCHCHANNEL(servername, nick, targetChannel));
 		return;
-    }
+	}
 
-    // 클라이언트가 타겟 채널에 참여하고 있는지 확인
-    if (channelPtr->isInChannel(nick) == false) {
-        sendReply(ERR_NOTONCHANNEL(servername, nick, targetChannel));
+	// 클라이언트가 타겟 채널에 참여하고 있는지 확인
+	if (!channelPtr->isInChannel(nick)) {
+		sendReply(ERR_NOTONCHANNEL(servername, nick, targetChannel));
 		return;
-    }
+	}
 
-    // 채널이 초대 전용 모드일 경우, 클라이언트가 초대권한이 있는지 확인
-    if (channelPtr->isModeOn('t') && channelPtr->isOperator(nick) == false) {
-        sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, targetChannel));
+	if (channelPtr->isModeOn('t') && !channelPtr->isOperator(nick)) {
+		sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, targetChannel));
 		return;
-    }
+	}
 
-    channelPtr->setTopic(newTopic);
-    std::string setTimeStr = std::to_string(std::time(nullptr));
-    sendReply(RPL_TOPIC(servername, nick, targetChannel, newTopic));
-    sendReply(RPL_TOPICWHOTIME(servername, nick, targetChannel, 
-                USER_ADDR(nick, client->getUserName(), "irc.local"), setTimeStr));
+	channelPtr->setTopic(newTopic);
+	std::string setTimeStr = std::to_string(std::time(nullptr));
+	sendReply(RPL_TOPIC(servername, nick, targetChannel, newTopic));
+	sendReply(RPL_TOPICWHOTIME(servername, nick, targetChannel,
+							   USER_ADDR(nick, client->getUserName(), "irc.local"), setTimeStr));
 }

@@ -8,48 +8,48 @@ enum UserMode {
 	OPERATOR = 'O'
 };
 
+enum UserFlag {
+	_init = 0,
+	_pass,
+	_nick,
+	_connect
+};
 
 class Client {
 private:
-	int         client_fd;
- 	std::string nickname;   
+	int			client_fd;
+	std::string	nickname;
 	std::string	userName;
 	std::string realName;
-//	std::string	password;
-	std::string modeStr;
+	std::string	modeStr;
+	int			_flag;
 
-	bool		_authorized;
-
-	std::vector<std::string> joinedChannels;
-
-	Client();
+	std::vector <std::string>	joinedChannels;
 
 public:
-    Client(int _fd);
-    // Client(int _fd, std::string _nickname);
-    ~Client();
+	Client(int _fd);
+	~Client();
 
-    int         getClientFd() const;
- 	std::string getNickname() const;   
+	int getClientFd() const;
+	int getFlag() const;
+	std::string getNickname() const;
 	std::string getUserName() const;
 	std::string getRealName() const;
-//	std::string	getPassword() const;
-//	std::string getUserMode() const;
-	std::vector<std::string> getJoinedChannels() const;
+	std::vector <std::string> getJoinedChannels() const;
 
-    void    setNickname(const std::string nickname);
-	void	setUserName(const std::string userName);
-    void    setRealName(const std::string realName);
-	void	setAuthorization();
+	void setNickname(const std::string nickname);
+	void setUserName(const std::string userName);
+	void setRealName(const std::string realName);
+	void setFlag(int flag);
 
-	void	joinChannel(std::string channelName);
-	void	quitChannel(std::string channelName);
-	void	quitAllChannels();
+	void joinChannel(std::string channelName);
+	void quitChannel(std::string channelName);
+	void quitAllChannels();
 
-	bool	isAuthorized() const;
+	bool isAuthorized() const;
 
-	bool	isServerOper() const;
-	void	setServerOper(bool op);
+	bool isServerOper() const;
+	void setServerOper(bool op);
 };
 
 #endif

@@ -24,9 +24,13 @@
 * Message Examples:
 *	- :dan-!d@localhost PART #test    ; dan-이 채널 #test를 나감.
 */
-void Command::part(std::map<std::string, Channel*> &channelsInServer) {
+void Command::part(std::map<std::string, Channel *> &channelsInServer) {
 	int numParam = getNumParameter();
-    std::string servername = "irc.local";
+	if (client->getFlag() != _connect) {
+		messageIndex += numParam + 1;
+		return;
+	}
+	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
 	if (numParam < 2) {
@@ -34,42 +38,40 @@ void Command::part(std::map<std::string, Channel*> &channelsInServer) {
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "PART"));
 		return;
 	}
-	
-	std::vector<std::string> channels = splitByComma(tokens[messageIndex + 1]);
-	std::string reason = (numParam > 2) ? tokens[messageIndex + 2] : "";
+
+	std::vector <std::string> channels = splitByComma(tokens[messageIndex + 1]);
 	messageIndex += numParam + 1;
 
-    std::vector<std::string>::iterator it = channels.begin();
-    for ( ; it != channels.end(); it++) {
-        std::string targetChannel = *it;
+	std::vector<std::string>::iterator it = channels.begin();
+	for (; it != channels.end(); it++) {
+		std::string targetChannel = *it;
 
-        // 타겟 채널이 서버에 존재하는지 확인
-        Channel* channelPtr = isChannelExist(channelsInServer, targetChannel);
-        if (channelPtr == NULL) {
-            sendReply(ERR_NOSUCHCHANNEL(servername, nick, targetChannel));
-            return;
-        }
+		// 타겟 채널이 서버에 존재하는지 확인
+		Channel *channelPtr = isChannelExist(channelsInServer, targetChannel);
+		if (channelPtr == NULL) {
+			sendReply(ERR_NOSUCHCHANNEL(servername, nick, targetChannel));
+			return;
+		}
 
-        // 클라이언트가 타겟 채널에 참여하고 있는지 확인
-        if (channelPtr->isInChannel(nick) == false) {
-            sendReply(ERR_NOTONCHANNEL(servername, nick, targetChannel));
-            return;
-        }
+		// 클라이언트가 타겟 채널에 참여하고 있는지 확인
+		if (channelPtr->isInChannel(nick) == false) {
+			sendReply(ERR_NOTONCHANNEL(servername, nick, targetChannel));
+			return;
+		}
 
-        // do part
-        std::string partMsg = ":" + USER_ADDR(nick, nick, "irc.local") \
-                                + " PART :" + targetChannel + reason + "\r\n";
+		// do part
+		std::string partMsg = ":" + USER_ADDR(nick, nick, "irc.local") \
+ + " PART :" + targetChannel + "\r\n";
 
-        channelPtr->deleteMember(nick);
+		channelPtr->deleteMember(nick);
 		client->quitChannel(targetChannel);
 		sendReply(partMsg);
-//		sendToChannel(partMsg, channelPtr);
+		sendToChannel(nick, partMsg, channelPtr);
 
-		if (channelPtr->getMemberNum() == 0)
-		{
+		if (channelPtr->getMemberNum() == 0) {
 			delete channelPtr;
 			channelsInServer.erase(targetChannel);
 		}
-    }
+	}
 }
 

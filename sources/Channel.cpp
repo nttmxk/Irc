@@ -10,8 +10,8 @@ Channel::Channel() : name(""), key(""), topic(""), memberLimit(-1) {
 	mode[USER_LIMIT] = false;
 }
 
-Channel::Channel(std::string const name, Client* creator) 
-	: name(name), key(""), topic(""), memberLimit(-1) {
+Channel::Channel(std::string const name, Client *creator)
+		: name(name), key(""), topic(""), memberLimit(-1) {
 	// 채널 모드
 	mode[INVITE_ONLY] = false;
 	mode[TOPIC] = true;
@@ -28,6 +28,7 @@ Channel::~Channel() {}
 std::string Channel::getName() {
 	return this->name;
 }
+
 std::string Channel::getKey() {
 	return this->key;
 }
@@ -55,27 +56,27 @@ int Channel::getMemberNum() {
 
 
 /* Setter */
-void	Channel::setTopic(std::string newTopic) {
+void Channel::setTopic(std::string newTopic) {
 	this->topic = newTopic;
 }
 
-void	Channel::setKey(std::string newKey) {
+void Channel::setKey(std::string newKey) {
 	this->key = newKey;
 }
 
-void	Channel::setMemberLimit(int n) {
+void Channel::setMemberLimit(int n) {
 	if (n < 0)
 		n = -1;
 	this->memberLimit = n;
 }
-	
+
 /* Member */
 bool Channel::isInChannel(const std::string targetNick) const {
-	std::map<std::string, Client*>::const_iterator ret = this->members.find(targetNick);
+	std::map<std::string, Client *>::const_iterator ret = this->members.find(targetNick);
 	return ret != this->members.end();
 }
 
-void Channel::addMember(Client* client, bool isOper) {
+void Channel::addMember(Client *client, bool isOper) {
 	std::string nickname = client->getNickname();
 	if (!isInChannel(nickname))
 		this->members.insert(std::make_pair(nickname, client));
@@ -100,7 +101,7 @@ bool Channel::isInvitedMember(const std::string targetNick) {
 	return ret != this->invitedUsers.end();
 }
 
-void Channel::addInvitedMember(Client* client) {
+void Channel::addInvitedMember(Client *client) {
 	std::string nickname = client->getNickname();
 	if (isInvitedMember(nickname))
 		addMember(client, false);
@@ -109,23 +110,23 @@ void Channel::addInvitedMember(Client* client) {
 
 std::string Channel::getMemberStr() {
 	std::string ret = "";
-	std::vector<std::string>::iterator it; 
-	std::vector<std::string>::iterator end_it; 
+	std::vector<std::string>::iterator it;
+	std::vector<std::string>::iterator end_it;
 
 	it = this->operators.begin();
 	end_it = this->operators.end();
-	for ( ; it != end_it; it++) 
+	for (; it != end_it; it++)
 		ret += ("@" + *it + " ");
 
-	it = this->normalMembers.begin(); 
+	it = this->normalMembers.begin();
 	end_it = this->normalMembers.end();
-	for ( ; it != end_it; it++) 
+	for (; it != end_it; it++)
 		ret += (*it + " ");
-	
+
 	return ret;
 }
 
-std::map<std::string, Client*>& Channel::getMembers() {
+std::map<std::string, Client *> &Channel::getMembers() {
 	return members;
 }
 
@@ -159,7 +160,7 @@ void Channel::offMode(const int modeIdx) {
 
 bool Channel::isModeOn(const char modeChar) {
 	int idx = 0;
-	for ( ; idx < ChannelModeCnt; idx++) {
+	for (; idx < ChannelModeCnt; idx++) {
 		if (modeChar == channelModeChar[idx])
 			break;
 	}

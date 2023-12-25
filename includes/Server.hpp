@@ -23,25 +23,26 @@ public:
 	Server(int portNum, std::string pwd);
 	~Server();
 
-	std::string startTime;
+	std::string		startTime;
 
 	int				getServerFd(void) const;
 	struct pollfd	*getPollFds(void);
 	void			addClient(void);
 	void			readMessage(int clientFd);
-	void			runCommand(int clientFd);
 
 private:
-	int								serverFd;
-	struct sockaddr_in				serverAddress;
-	struct pollfd					pollFds[USER_MAX + 4];
-	char							buffer[BUF_LEN];
-	std::map<int, std::string>		message;
-	std::map<int, Client*>			clients;
-	std::map<std::string, Channel*>	channels;
-	std::string						_pwd;
+	int				serverFd;
+	struct			sockaddr_in serverAddress;
+	struct pollfd	pollFds[USER_MAX + 4];
+	char			buffer[BUF_LEN];
+
+	std::map<int, std::string>			message;
+	std::map<int, Client *>				clients;
+	std::map<std::string, Channel *>	channels;
+	std::string							_pwd;
 
 	void	setPoll(int index, int fd, short events, short revents);
+	void	runCommand(int clientFd);
 	void	deleteClient(int clientFd);
 };
 

@@ -8,9 +8,13 @@
  *		; User syrk has quit IRC to have lunch. ( --> Preferred message format )
  * client가 서버 접속을 끊음, client가 접속해 있는 모든 채널에서 나감
  */
-void Command::quit(std::map<std::string, Channel*> &channelsInServer) {
+void Command::quit(std::map<std::string, Channel *> &channelsInServer) {
 	int numParam = getNumParameter();
-	std::vector<std::string> joinedChannels = client->getJoinedChannels();
+	if (client->getFlag() != _connect) {
+		messageIndex += numParam + 1;
+		return;
+	}
+	std::vector <std::string> joinedChannels = client->getJoinedChannels();
 	std::string nick = client->getNickname();
 	std::string quitMsg = "Quit: ";
 	quitMsg += (numParam == 1) ? "leaving" : tokens[messageIndex + 1];
@@ -18,16 +22,15 @@ void Command::quit(std::map<std::string, Channel*> &channelsInServer) {
 
 	messageIndex += numParam + 1;
 	std::vector<std::string>::iterator it = joinedChannels.begin();
-	for ( ; it != joinedChannels.end(); it++) {
+	for (; it != joinedChannels.end(); it++) {
 		std::string targetChannel = *it;
 
-		Channel* channelPtr = isChannelExist(channelsInServer, targetChannel);
+		Channel *channelPtr = isChannelExist(channelsInServer, targetChannel);
 		if (channelPtr == NULL || !(channelPtr->isInChannel(nick)))
 			continue;
+		sendToChannel(nick, quitMsg, channelPtr);
 		channelPtr->deleteMember(nick);
-//		sendToChannel(quitMsg, channelPtr);
-		if (channelPtr->getMemberNum() == 0)
-		{
+		if (channelPtr->getMemberNum() == 0) {
 			delete channelPtr;
 			channelsInServer.erase(targetChannel);
 		}

@@ -1,7 +1,11 @@
 #include "../../includes/Command.hpp"
 
-void Command::who(std::map<std::string,Channel*> &channelsInServer) {
+void Command::who(std::map<std::string, Channel *> &channelsInServer) {
 	int numParam = getNumParameter();
+	if (client->getFlag() != _connect) {
+		messageIndex += numParam + 1;
+		return;
+	}
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
@@ -11,9 +15,8 @@ void Command::who(std::map<std::string,Channel*> &channelsInServer) {
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "WHO"));
 		return;
 	}
-	Channel* channelPtr = isChannelExist(channelsInServer, channelName);
-	if (channelPtr == NULL)
-	{
+	Channel *channelPtr = isChannelExist(channelsInServer, channelName);
+	if (channelPtr == NULL) {
 		sendReply(ERR_NOSUCHCHANNEL(servername, nick, channelName));
 		return;
 	}

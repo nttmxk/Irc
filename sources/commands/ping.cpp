@@ -1,8 +1,11 @@
 #include "../../includes/Command.hpp"
 
-
 void Command::ping() {
 	int numParam = getNumParameter();
+	if (client->getFlag() != _connect) {
+		messageIndex += numParam + 1;
+		return;
+	}
 	const std::string servername = "irc.local";
 	const std::string nick = this->client->getNickname();
 
@@ -13,7 +16,5 @@ void Command::ping() {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "PING"));
 		return;
 	}
-
-	if (this->client->isAuthorized())
-		this->sendReply(RPL_PONG(servername, ip));
+	this->sendReply(RPL_PONG(servername, ip));
 } 

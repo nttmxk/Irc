@@ -13,23 +13,24 @@ void Command::pass(const std::string pwd) {
 	int numParam = getNumParameter();
 	const std::string servername = "irc.local";
 	const std::string nick = this->client->getNickname();
-
+	if (client->getFlag() != _init) {
+		this->sendReply(ERR_ALREADYREGISTRED(servername, nick));
+		messageIndex += numParam + 1;
+		return;
+	}
 	std::string password = this->tokens[messageIndex + 1];
 	messageIndex += numParam + 1;
-	std::clog << "[Log] pass:" << password << '\n';
+//	std::clog << "[Log] pass:" << password << '\n';
 
 	if (numParam < 2) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "PASS"));
-		isConnectEnd = true;
 		return;
 	}
 
-	if (this->client->isAuthorized()) {
-		this->sendReply(ERR_ALREADYREGISTRED(servername, nick));
-		return;
-	} else if (pwd != password) {
+	if (pwd != password) {
 		this->sendReply(ERR_PASSWDMISMATCH(servername, nick));
 		isConnectEnd = true;
 		return;
 	}
+	client->setFlag(_pass);
 } 
