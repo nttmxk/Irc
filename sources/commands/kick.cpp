@@ -30,10 +30,9 @@
 *									; WiZ가 채널 #Finnish에서 John을 제거하도록 하는 KICK 메시지
 */
 
-void Command::kick(std::map<int, Client*> &clientsInServer, std::map<std::string, Channel*> &channelsInServer) {
-    int numParam = getNumParameter();
-	if (client->getFlag() != _connect)
-	{
+void Command::kick(std::map<int, Client *> &clientsInServer, std::map<std::string, Channel *> &channelsInServer) {
+	int numParam = getNumParameter();
+	if (client->getFlag() != _connect) {
 		messageIndex += numParam + 1;
 		return;
 	}
@@ -46,50 +45,50 @@ void Command::kick(std::map<int, Client*> &clientsInServer, std::map<std::string
 		return;
 	}
 
-    std::string targetChannel = tokens[messageIndex + 1];
-    std::string targetNicks = tokens[messageIndex + 2];
-    std::string comment = (numParam > 3) ? tokens[messageIndex + 3] : "";
-    messageIndex += numParam + 1;
+	std::string targetChannel = tokens[messageIndex + 1];
+	std::string targetNicks = tokens[messageIndex + 2];
+	std::string comment = (numParam > 3) ? tokens[messageIndex + 3] : "";
+	messageIndex += numParam + 1;
 
-    // 타겟 채널이 서버에 존재하는지 확인
-    Channel* channelPtr = isChannelExist(channelsInServer, targetChannel);
-    if (channelPtr == NULL) {
-        sendReply(ERR_NOSUCHCHANNEL(servername, nick, targetChannel));
+	// 타겟 채널이 서버에 존재하는지 확인
+	Channel *channelPtr = isChannelExist(channelsInServer, targetChannel);
+	if (channelPtr == NULL) {
+		sendReply(ERR_NOSUCHCHANNEL(servername, nick, targetChannel));
 		return;
-    }
+	}
 
-    // 클라이언트가 타겟 채널에 참여하고 있는지 확인
-    if (!channelPtr->isInChannel(nick)) {
-        sendReply(ERR_NOTONCHANNEL(servername, nick, targetChannel));
+	// 클라이언트가 타겟 채널에 참여하고 있는지 확인
+	if (!channelPtr->isInChannel(nick)) {
+		sendReply(ERR_NOTONCHANNEL(servername, nick, targetChannel));
 		return;
-    }
+	}
 
-    // 클라이언트가 타겟 채널 kick 권한이 있는지 확인
-    if (!channelPtr->isOperator(nick)) {
-        sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, targetChannel));
+	// 클라이언트가 타겟 채널 kick 권한이 있는지 확인
+	if (!channelPtr->isOperator(nick)) {
+		sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, targetChannel));
 		return;
-    }
+	}
 
-    std::vector<std::string> targetNickList = splitByComma(targetNicks);
-    std::vector<std::string>::iterator it = targetNickList.begin();
-    for ( ; it != targetNickList.end(); it++) {
-        std::string targetNick = *it;
+	std::vector <std::string> targetNickList = splitByComma(targetNicks);
+	std::vector<std::string>::iterator it = targetNickList.begin();
+	for (; it != targetNickList.end(); it++) {
+		std::string targetNick = *it;
 
-        // 타겟 유저가 채널에 참여하고 있는지 확인
-        if (!channelPtr->isInChannel(targetNick)) {
-            sendReply(ERR_USERNOTINCHANNEL(servername, nick, targetNick, targetChannel));
-            return;
-        }
+		// 타겟 유저가 채널에 참여하고 있는지 확인
+		if (!channelPtr->isInChannel(targetNick)) {
+			sendReply(ERR_USERNOTINCHANNEL(servername, nick, targetNick, targetChannel));
+			return;
+		}
 
-        std::string kickMsg = ":" + USER_ADDR(nick, nick, "irc.local") \
-                                + " KICK " + targetChannel + " " + targetNick + + " " + comment + "\r\n";
+		std::string kickMsg = ":" + USER_ADDR(nick, nick, "irc.local") \
+ + " KICK " + targetChannel + " " + targetNick + +" " + comment + "\r\n";
 
-		Client* clientPtr = findClientByNick(clientsInServer, targetNick);
+		Client *clientPtr = findClientByNick(clientsInServer, targetNick);
 		if (clientPtr == nullptr)
 			return;
 		clientPtr->quitChannel(targetChannel);
 		sendReply(kickMsg);
 		sendToChannel(nick, kickMsg, channelPtr);
 		channelPtr->deleteMember(targetNick);
-    }
+	}
 }

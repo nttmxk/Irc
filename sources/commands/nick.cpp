@@ -16,22 +16,23 @@ static bool isValidNickname(const std::string nickname) {
 
 	// 첫문자가 숫자인지 체크
 	if (std::isdigit(nickname[0])) {
-        return false;
-    }
+		return false;
+	}
 
 	// 사용 불가능한 문자가 있는지 체크
 	for (std::string::const_iterator it = nickname.begin(); it != nickname.end(); ++it) {
-        if (validNicknameChars.find(*it) == std::string::npos) {
-            return false;  // Character not allowed
-        }
-    }
+		if (validNicknameChars.find(*it) == std::string::npos) {
+			return false;  // Character not allowed
+		}
+	}
 	return true;
 }
 
 // 닉네임 중복 확인
-static bool isNicknameAlreadyInUse(const int client_fd, const std::string nickname, const std::map<int, Client*> clients) {
-	std::map<int, Client*>::const_iterator it = clients.begin();	
-	for( ; it != clients.end(); it++) {
+static bool
+isNicknameAlreadyInUse(const int client_fd, const std::string nickname, const std::map<int, Client *> clients) {
+	std::map<int, Client *>::const_iterator it = clients.begin();
+	for (; it != clients.end(); it++) {
 		if (it->first == client_fd)
 			continue;
 		if (it->second->getNickname() == nickname) {
@@ -54,10 +55,9 @@ static bool isNicknameAlreadyInUse(const int client_fd, const std::string nickna
  * 닉네임 파라미터 못받았을 경우, 431 보낸 후 커멘드 무시
  * 닉네임 변경 성공 시, <old nickname>!<user>@localhost NICK <new nickname> 출력 ex) oldhio!root@127.0.0.1 NICK newhio
  */
-void Command::nick(std::map<int, Client*> &clients, std::map<std::string, Channel*> &channelsInServer) {
+void Command::nick(std::map<int, Client *> &clients, std::map<std::string, Channel *> &channelsInServer) {
 	int numParam = getNumParameter();
-	if (client->getFlag() < _pass)
-	{
+	if (client->getFlag() < _pass) {
 		messageIndex += numParam + 1;
 		return;
 	}
@@ -75,11 +75,11 @@ void Command::nick(std::map<int, Client*> &clients, std::map<std::string, Channe
 	if (newNickname == "") {
 		this->sendReply(ERR_NONICKNAMEGIVEN(servername, nick));
 		return;
-	} 
+	}
 	if (!isValidNickname(newNickname)) {
 		this->sendReply(ERR_ERRONEUSNICKNAME(servername, nick, newNickname));
 		return;
-	} 
+	}
 	// 중복확인
 	if (isNicknameAlreadyInUse(client->getClientFd(), newNickname, clients)) {
 		this->sendReply(ERR_NICKNAMEINUSE(servername, nick, newNickname));
@@ -87,7 +87,7 @@ void Command::nick(std::map<int, Client*> &clients, std::map<std::string, Channe
 	}
 
 	std::string nickMsg = ":" + USER_ADDR(nick, nick, "irc.local") \
-                                + " NICK :" + newNickname + "\r\n";
+ + " NICK :" + newNickname + "\r\n";
 	client->setNickname(newNickname);
 	sendReply(nickMsg);
 	if (client->getFlag() == _pass)

@@ -42,10 +42,9 @@
 *	- :WiZ JOIN #Twilight_zone        ; WiZ가 채널 #Twilight_zone에 참여.
 *	- :dan-!d@localhost JOIN #test    ; dan-이 채널 #test에 참여.
 */
-void Command::join(std::map<std::string,Channel*> &channelsInServer) {
+void Command::join(std::map<std::string, Channel *> &channelsInServer) {
 	int numParam = getNumParameter();
-	if (client->getFlag() != _connect)
-	{
+	if (client->getFlag() != _connect) {
 		messageIndex += numParam + 1;
 		return;
 	}
@@ -57,28 +56,27 @@ void Command::join(std::map<std::string,Channel*> &channelsInServer) {
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "JOIN"));
 		return;
 	}
-	std::clog << "[Log] join:" << tokens[messageIndex+1] << '\n';
+	std::clog << "[Log] join:" << tokens[messageIndex + 1] << '\n';
 
-	std::vector<std::string> channels;
-	std::vector<std::string> keys;
+	std::vector <std::string> channels;
+	std::vector <std::string> keys;
 	bool hasKeys = numParam >= 3;
-	
+
 	channels = splitByComma(tokens[messageIndex + 1]);
 	if (hasKeys)
 		keys = splitByComma(tokens[messageIndex + 2]);
 	messageIndex += numParam + 1;
 
 	// 벡터 순회하면서 채널에 들어가기
-	for (std::size_t i=0; i < channels.size(); i++) {
+	for (std::size_t i = 0; i < channels.size(); i++) {
 		// 채널이 서버에 존재하는지 확인, 없으면 새로 생성
-		Channel* channelPtr = isChannelExist(channelsInServer, channels[i]);
+		Channel *channelPtr = isChannelExist(channelsInServer, channels[i]);
 		if (channelPtr == NULL) {
 			std::clog << "[Log] join: make a new channel: " << channels[i] << "\n";
-			Channel* newChannel = new Channel(channels[i], client);
+			Channel *newChannel = new Channel(channels[i], client);
 			channelsInServer.insert(make_pair(channels[i], newChannel));
 			channelPtr = newChannel;
-		}
-		else {
+		} else {
 			// 채널에 key가 설정되어 있다면, 입력받은 key와 일치하는지 확인
 			if (channelPtr->isModeOn('k')) {
 				std::string keyOfChannel = channelPtr->getKey();
@@ -108,7 +106,6 @@ void Command::join(std::map<std::string,Channel*> &channelsInServer) {
 		}
 		client->joinChannel(channels[i]);
 
-		// 1. Join Msg -> 채널로 보내는 건가..?
 		std::string joinMsg = RPL_JOIN(nick, "irc.local", channels[i]);
 		sendToChannel(nick, joinMsg, channelPtr);
 		sendReply(joinMsg);

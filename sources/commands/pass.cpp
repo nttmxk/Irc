@@ -13,8 +13,7 @@ void Command::pass(const std::string pwd) {
 	int numParam = getNumParameter();
 	const std::string servername = "irc.local";
 	const std::string nick = this->client->getNickname();
-	if (client->getFlag() != _init)
-	{
+	if (client->getFlag() != _init) {
 		this->sendReply(ERR_ALREADYREGISTRED(servername, nick));
 		messageIndex += numParam + 1;
 		return;

@@ -43,9 +43,9 @@ void Server::setPoll(int index, int fd, short events, short revents) {
 }
 
 void Server::addClient(void) {
-	struct sockaddr_in	clientAddress;
-	int					clientFd;
-	socklen_t			clientAddressSize = sizeof(clientAddress);
+	struct sockaddr_in clientAddress;
+	int clientFd;
+	socklen_t clientAddressSize = sizeof(clientAddress);
 
 	if ((clientFd = accept(serverFd, (struct sockaddr *) &clientAddress,
 						   &clientAddressSize)) == -1) {
@@ -80,35 +80,31 @@ void Server::readMessage(int clientFd) {
 	int readSize = recv(clientFd, buffer, BUF_LEN - 1, MSG_DONTWAIT);
 
 	if (readSize < 0) {
-		std::clog << clientFd << ": Message read size < 0\n";
-		message[clientFd] = "QUIT :disconnected\r\n";
+//		std::clog << clientFd << ": Message read size < 0\n";
+		message[clientFd] = "QUIT :error exit\r\n";
 		runCommand(clientFd);
 		deleteClient(clientFd);
 	}
 	buffer[readSize] = 0;
-	std::clog << "Message from " << clientFd << " with rSize:" << readSize << '\n' << buffer;
-	if (readSize == 0)
-	{
+//	std::clog << "Message from " << clientFd << " with rSize:" << readSize << '\n' << buffer;
+	if (readSize == 0) {
 //		std::clog << "[Log] rSize=0 " << clientFd << ": Quit\n";
 		message[clientFd] = "QUIT :disconnected\r\n";
 		runCommand(clientFd);
 		deleteClient(clientFd);
-	}
-	else if (readSize > 1 && buffer[readSize - 2] == '\r' && buffer[readSize - 1] == '\n')
-	{
+	} else if (readSize > 1 && buffer[readSize - 2] == '\r' && buffer[readSize - 1] == '\n') {
 		message[clientFd].append(buffer);
 //		std::clog << "[Log] " << clientFd << ":" << message[clientFd];
 		runCommand(clientFd);
 		message[clientFd].clear();
-	}
-	else
+	} else
 		message[clientFd].append(buffer);
 }
 
 void Server::runCommand(int clientFd) {
 	Command command(clients[clientFd], message[clientFd]);
-	int 	type;
-	bool	noCommand = false;
+	int type;
+	bool noCommand = false;
 
 	while (!command.isTokenEnd()) {
 		type = command.getCommandType();
@@ -138,7 +134,7 @@ void Server::runCommand(int clientFd) {
 				command.invite(clients, channels);
 				break;
 			case (KICK):
-				command.kick(clients ,channels);
+				command.kick(clients, channels);
 				break;
 			case (QUIT):
 				command.quit(channels);
@@ -170,8 +166,7 @@ void Server::runCommand(int clientFd) {
 			command.passCommand();
 			noCommand = false;
 		}
-		if (command.isConnectEnd)
-		{
+		if (command.isConnectEnd) {
 			deleteClient(clientFd);
 			break;
 		}
@@ -179,17 +174,15 @@ void Server::runCommand(int clientFd) {
 }
 
 Server::~Server() {
-	std::map<int, Client*>::iterator it = clients.begin();
-	while (it != clients.end())
-	{
+	std::map<int, Client *>::iterator it = clients.begin();
+	while (it != clients.end()) {
 		close(it->first);
 		delete it->second;
 		it->second = nullptr;
 		++it;
 	}
-	std::map<std::string, Channel*>::iterator it2 = channels.begin();
-	while (it2 != channels.end())
-	{
+	std::map<std::string, Channel *>::iterator it2 = channels.begin();
+	while (it2 != channels.end()) {
 		delete it2->second;
 		it2->second = nullptr;
 		++it2;

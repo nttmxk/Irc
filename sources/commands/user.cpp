@@ -14,8 +14,7 @@
  */
 void Command::user(std::string time) {
 	int numParam = getNumParameter();
-	if (client->getFlag() < _nick)
-	{
+	if (client->getFlag() < _nick) {
 		messageIndex += numParam + 1;
 		return;
 	}
@@ -35,7 +34,7 @@ void Command::user(std::string time) {
 	if (userName.length() < 1 || realName.length() < 1) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "USER"));
 		return;
-	} 
+	}
 	if (client->isAuthorized()) {
 		this->sendReply(ERR_ALREADYREGISTRED(servername, nick));
 		return;

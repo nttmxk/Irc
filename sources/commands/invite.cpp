@@ -20,10 +20,9 @@
 * Message Examples:
 *	- :dan-!d@localhost INVITE Wiz #test    ; dan-이 Wiz를 #test 채널로 초대함.
 */
-void Command::invite(std::map<int, Client*> &clientsInServer, std::map<std::string, Channel*> &channelsInServer) {
-    int numParam = getNumParameter();
-	if (client->getFlag() != _connect)
-	{
+void Command::invite(std::map<int, Client *> &clientsInServer, std::map<std::string, Channel *> &channelsInServer) {
+	int numParam = getNumParameter();
+	if (client->getFlag() != _connect) {
 		messageIndex += numParam + 1;
 		return;
 	}
@@ -36,41 +35,41 @@ void Command::invite(std::map<int, Client*> &clientsInServer, std::map<std::stri
 		return;
 	}
 
-    std::string targetNick = tokens[messageIndex + 1];
-    std::string targetChannel = tokens[messageIndex + 2];
-    messageIndex += numParam + 1;
+	std::string targetNick = tokens[messageIndex + 1];
+	std::string targetChannel = tokens[messageIndex + 2];
+	messageIndex += numParam + 1;
 
-    
-    // 타겟 채널이 서버에 존재하는지 확인
-    Channel* channelPtr = isChannelExist(channelsInServer, targetChannel);
-    if (channelPtr == NULL) {
-        sendReply(ERR_NOSUCHCHANNEL(servername, nick, targetChannel));
+
+	// 타겟 채널이 서버에 존재하는지 확인
+	Channel *channelPtr = isChannelExist(channelsInServer, targetChannel);
+	if (channelPtr == NULL) {
+		sendReply(ERR_NOSUCHCHANNEL(servername, nick, targetChannel));
 		return;
-    }
+	}
 
-    // 클라이언트가 타겟 채널에 참여하고 있는지 확인
-    if (!channelPtr->isInChannel(nick)) {
-        sendReply(ERR_NOTONCHANNEL(servername, nick, targetChannel));
+	// 클라이언트가 타겟 채널에 참여하고 있는지 확인
+	if (!channelPtr->isInChannel(nick)) {
+		sendReply(ERR_NOTONCHANNEL(servername, nick, targetChannel));
 		return;
-    }
+	}
 
-    // 채널이 초대 전용 모드일 경우, 클라이언트가 초대권한이 있는지 확인
-    if (channelPtr->isModeOn('i') && !channelPtr->isOperator(nick)) {
-        sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, targetChannel));
+	// 채널이 초대 전용 모드일 경우, 클라이언트가 초대권한이 있는지 확인
+	if (channelPtr->isModeOn('i') && !channelPtr->isOperator(nick)) {
+		sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, targetChannel));
 		return;
-    }
+	}
 
-    // 타겟 유저가 채널에 이미 참여하고 있는지 확인
-    if (channelPtr->isInChannel(targetNick)) {
-        sendReply(ERR_USERONCHANNEL(servername, nick, targetNick, targetChannel));
+	// 타겟 유저가 채널에 이미 참여하고 있는지 확인
+	if (channelPtr->isInChannel(targetNick)) {
+		sendReply(ERR_USERONCHANNEL(servername, nick, targetNick, targetChannel));
 		return;
-    }
+	}
 
-    sendReply(RPL_INVITING(servername, nick, targetChannel, targetNick));
-    std::string inviteMsg = USER_ADDR(nick, client->getUserName(), "irc.local") \
-                                + " invite :" + targetChannel = "\r\n";
+	sendReply(RPL_INVITING(servername, nick, targetChannel, targetNick));
+	std::string inviteMsg = USER_ADDR(nick, client->getUserName(), "irc.local") \
+ + " invite :" + targetChannel = "\r\n";
 
-	Client* clientPtr = findClientByNick(clientsInServer, targetNick);
+	Client *clientPtr = findClientByNick(clientsInServer, targetNick);
 	if (clientPtr == nullptr)
 		return;
 	sendByFD(clientPtr->getClientFd(), inviteMsg);

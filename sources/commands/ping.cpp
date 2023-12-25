@@ -1,10 +1,8 @@
 #include "../../includes/Command.hpp"
 
-
 void Command::ping() {
 	int numParam = getNumParameter();
-	if (client->getFlag() != _connect)
-	{
+	if (client->getFlag() != _connect) {
 		messageIndex += numParam + 1;
 		return;
 	}

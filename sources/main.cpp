@@ -28,9 +28,9 @@ int main(int argc, char *argv[]) {
 	if (checkArg(argc, argv))
 		return (1);
 
-	Server			server(std::atoi(argv[1]), argv[2]);
-	int				retPoll;
-	struct pollfd	*pollFds = server.getPollFds();
+	Server server(std::atoi(argv[1]), argv[2]);
+	int retPoll;
+	struct pollfd *pollFds = server.getPollFds();
 
 	while (1) {
 		retPoll = poll(pollFds, USER_MAX + 4, 4242);

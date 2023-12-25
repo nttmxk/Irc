@@ -1,13 +1,13 @@
 #include "../includes/Client.hpp"
 
 
-Client::Client(int _fd) 
-	: client_fd(_fd), 
-	  nickname(""), userName(""), realName(""), _flag(_init) {}
+Client::Client(int _fd)
+		: client_fd(_fd),
+		  nickname(""), userName(""), realName(""), _flag(_init) {}
 
 Client::~Client() {}
 
-int	Client::getClientFd() const {
+int Client::getClientFd() const {
 	return this->client_fd;
 }
 
@@ -27,7 +27,7 @@ int Client::getFlag() const {
 	return _flag;
 }
 
-std::vector<std::string> Client::getJoinedChannels() const {
+std::vector <std::string> Client::getJoinedChannels() const {
 	return joinedChannels;
 }
 
