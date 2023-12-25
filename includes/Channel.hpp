@@ -79,9 +79,6 @@ public:
 	void offMode(const int modeIdx);
 	bool isModeOn(const char modeChar);
 
-	/* Message Sending */
-	// void	sendToAll(std::string message, Client& from);
-
 private:
 	/* Normal Member */
 	void addNormalMember(const std::string targetNick);
