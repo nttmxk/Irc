@@ -51,6 +51,7 @@ public:
 	std::string						getKey();	
 	std::string						getTopic();
 	std::string 					getChannelMode();
+	int 							getMemberNum();
 	// const int						getMemberLimit();
 	// std::map <std::string, Client&>	getMembers();
 	// std::vector<std::string>		getOperators();

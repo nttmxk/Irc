@@ -71,8 +71,7 @@ void Command::nick(std::map<int, Client*> &clients) {
 		this->sendReply(ERR_NONICKNAMEGIVEN(servername, nick));
 		return;
 	} 
-	// 유효한 비밀번호인지 확인
-	if (!isValidNickname(newNickname)) { 
+	if (!isValidNickname(newNickname)) {
 		this->sendReply(ERR_ERRONEUSNICKNAME(servername, nick, newNickname));
 		return;
 	} 

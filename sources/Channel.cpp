@@ -50,6 +50,10 @@ std::string Channel::getChannelMode() {
 	return modes;
 }
 
+int Channel::getMemberNum() {
+	return members.size();
+}
+
 
 /* Setter */
 void	Channel::setTopic(std::string newTopic) {
@@ -62,7 +66,7 @@ void	Channel::setKey(std::string newKey) {
 
 void	Channel::setMemberLimit(int n) {
 	if (n < 0)
-		n = 0;
+		n = -1;
 	this->memberLimit = n;
 }
 	
@@ -80,10 +84,11 @@ void Channel::addMember(Client* client, bool isOper) {
 }
 
 void Channel::deleteMember(const std::string targetNick) {
-	if (isInChannel(targetNick))
-		this->members.erase(targetNick);
-	normalMembers.erase(std::remove(normalMembers.begin(), normalMembers.end(), targetNick), normalMembers.end());
-	
+	if (!isInChannel(targetNick))
+		return;
+	this->members.erase(targetNick);
+	deleteOperator(targetNick);
+	deleteNormalMember(targetNick);
 }
 
 bool Channel::isFull() {
@@ -100,7 +105,6 @@ void Channel::addInvitedMember(Client* client) {
 	if (isInvitedMember(nickname))
 		addMember(client, false);
 	invitedUsers.erase(std::remove(invitedUsers.begin(), invitedUsers.end(), nickname), invitedUsers.end());
-	deleteOperator(nickname);
 }
 
 std::string Channel::getMemberStr() {
@@ -153,7 +157,11 @@ bool Channel::isModeOn(const char modeChar) {
 		if (modeChar == channelModeChar[idx])
 			break;
 	}
-	return idx < ChannelModeCnt ? mode[idx] : false;
+	if (idx < ChannelModeCnt) {
+		return mode[idx];
+	} else {
+		return false;
+	}
 }
 
 /* Normal Member */

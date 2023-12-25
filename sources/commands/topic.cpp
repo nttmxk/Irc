@@ -33,6 +33,7 @@ void Command::topic(std::map<std::string, Channel*> &channelsInServer) {
 	std::string nick = client->getNickname();
 
 	if (numParam < 2) {
+		messageIndex += numParam + 1;
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "TOPIC"));
 		return;
 	}

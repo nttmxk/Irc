@@ -15,8 +15,8 @@ private:
  	std::string nickname;   
 	std::string	userName;
 	std::string realName;
-	std::string	password;
-	std::string modeStr;
+//	std::string	password;
+//	std::string modeStr;
 
 	bool		_authorized;
 
@@ -33,16 +33,20 @@ public:
  	std::string getNickname() const;   
 	std::string getUserName() const;
 	std::string getRealName() const;
-	std::string	getPassword() const;
-	std::string getUserMode() const;
-	std::vector<std::string> getJoinendChannels() const;
+//	std::string	getPassword() const;
+//	std::string getUserMode() const;
+	std::vector<std::string> getJoinedChannels() const;
 
     void    setNickname(const std::string nickname);
 	void	setUserName(const std::string userName);
     void    setRealName(const std::string realName);
+	void	setAuthorization();
+
+	void	joinChannel(std::string channelName);
+	void	quitChannel(std::string channelName);
+	void	quitAllChannels();
 
 	bool	isAuthorized() const;
-	void	checkAuthorization();
 
 	bool	isServerOper() const;
 	void	setServerOper();

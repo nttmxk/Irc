@@ -69,7 +69,6 @@ void Server::addClient(void) {
 void Server::deleteClient(int clientFd) {
 	setPoll(clientFd, -1, 0, 0);
 	message.erase(clientFd);
-	// QUIT channels before delete clients.
 	clients.erase(clientFd);
 	close(clientFd);
 }
@@ -96,9 +95,8 @@ void Server::readMessage(int clientFd) {
 		std::clog << "[Log] " << clientFd << ":New message\n" << message[clientFd] << '\n';
 		runCommand(clientFd);
 		message[clientFd].clear();
-		// when runCommand executes <QUIT>... then setPoll and close should be called here too?
 	}
-	else // Ctrl + D handling
+	else
 		message[clientFd].append(buffer);
 }
 
@@ -138,7 +136,7 @@ void Server::runCommand(int clientFd) {
 				command.kick(channels);
 				break;
 			case (QUIT):
-				command.quit();
+				command.quit(channels);
 				break;
 			case (cTOPIC):
 				command.topic(channels);
@@ -182,15 +180,12 @@ Server::~Server() {
 		it->second = nullptr;
 		++it;
 	}
-//	std::map<std::string, Channel*>::iterator it2 = channels.begin();
-//	while (it2 != channels.end())
-//	{
-//		delete it2->second;
-//		it2->second = nullptr;
-//		++it2;
-//	}
-	clients.clear();
-	message.clear();
-//	channels.clear();
+	std::map<std::string, Channel*>::iterator it2 = channels.begin();
+	while (it2 != channels.end())
+	{
+		delete it2->second;
+		it2->second = nullptr;
+		++it2;
+	}
 	close(serverFd);
 }

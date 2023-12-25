@@ -48,6 +48,7 @@ void Command::join(std::map<std::string,Channel*> &channelsInServer) {
 	std::string nick = client->getNickname();
 
 	if (numParam < 2) {
+		messageIndex += numParam + 1;
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "JOIN"));
 		return;
 	}
@@ -99,11 +100,13 @@ void Command::join(std::map<std::string,Channel*> &channelsInServer) {
 			// join channel
 			channelPtr->isInvitedMember(nick) ?
 			channelPtr->addInvitedMember(client) : channelPtr->addMember(client, false);
+			client->joinChannel(channels[i]);
 		}
 
 		// 1. Join Msg -> 채널로 보내는 건가..?
-		std::string joinMsg = USER_ADDR(nick, client->getUserName(), "127.0.0.1") \
-								+ " has joined " + channelPtr->getName() + "\r\n";
+		std::string joinMsg = RPL_JOIN(nick, "127.0.0.1", channels[i]);
+		//sendToChannel(joinMsg, channelPtr);
+//		sendReply(joinMsg); // sendToChannel 해버리면 이미 받았다?
 		// 2. 참여한 채널에 토픽이 잇으면 RPL_TOPIC (332)
 		sendReply(RPL_TOPIC(servername, nick, channelPtr->getName(), channelPtr->getTopic()));
 		// 3. 현재 채널에 참여한 사용자 목록 - RPL_NAMREPLY (353) + RPL_ENDOFNAMES (366)

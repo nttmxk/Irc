@@ -50,6 +50,7 @@ void Command::oper(std::map<int, Client*> &clientsInServer, const std::string pw
 	std::string nick = client->getNickname();
 
 	if (numParam < 3) {
+		messageIndex += numParam + 1;
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "OPER"));
 		return;
 	}

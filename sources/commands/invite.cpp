@@ -26,6 +26,7 @@ void Command::invite(std::map<std::string, Channel*> &channelsInServer) {
 	std::string nick = client->getNickname();
 
 	if (numParam < 3) {
+		messageIndex += numParam + 1;
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "INVITE"));
 		return;
 	}

@@ -30,12 +30,13 @@
 *									; WiZ가 채널 #Finnish에서 John을 제거하도록 하는 KICK 메시지
 */
 
-void Command::kick(std::map<std::string, Channel*> &channelsInServer) {
+void Command::kick(std::map<int, Client*> &clientsInServer, std::map<std::string, Channel*> &channelsInServer) {
     int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
 	if (numParam < 3) {
+		messageIndex += numParam + 1;
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "INVITE"));
 		return;
 	}
