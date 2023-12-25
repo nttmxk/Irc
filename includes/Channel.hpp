@@ -80,9 +80,9 @@ public:
 	void offMode(const int modeIdx);
 	bool isModeOn(const char modeChar);
 
-private:
-	/* Normal Member */
 	void addNormalMember(const std::string targetNick);
+
+private:
 	void deleteNormalMember(const std::string targetNick);
 
 };
