@@ -87,8 +87,9 @@ public:
 
 	void sendToChannel(std::string nick, std::string message, Channel *channel);
 	void privmsg(std::map<int, Client *> clients, std::map<std::string, Channel *> channels);
-	void notice(std::vector<Client &> targets, std::string message) const;
-	void notice(std::vector<Channel &> targets, std::string message) const;
+	void sendToNotice(std::string nick, std::string message, Channel* channel);
+	void notice(std::map<int, Client*> clients, std::map<std::string, Channel*> channels);
+	
 };
 
 #endif

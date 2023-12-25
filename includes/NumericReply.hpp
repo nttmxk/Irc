@@ -102,45 +102,11 @@
 // ERR_NOTEXTTOSEND (412)		// privmsg
 # define ERR_NOTEXTTOSEND(servername, nick) \
 	":" + servername + " 412 " + nick + " :No text to send\r\n"
-// // RPL_PRIVMSG				// privmsg
+// RPL_PRIVMSG					// privmsg
 # define RPL_PRIVMSG(nick, user, ip, receive, msg) \
 	":" + nick + "!" + user + "@" + ip + " PRIVMSG " + receive + " " + msg + "\r\n"
-/*
-RPL_UMODEIS (221)			// mode
-RPL_AWAY (301)				// privmsg
-RPL_CREATIONTIME (329)		// mode
-
-ERR_NOSUCHSERVER (402)		// privmsg
-ERR_CANNOTSENDTOCHAN (404)	// privmsg
-ERR_TOOMANYCHANNELS (405)	// join
-ERR_TOOMANYTARGETS (407)	// privmsg
-ERR_NORECIPIENT (411)		// privmsg
-ERR_NOTEXTTOSEND (412)		// privmsg
-ERR_NOTOPLEVEL (413)		// privmsg
-ERR_WILDTOPLEVEL (414)		// privmsg
-
-ERR_NICKCOLLISION (436)		// nick
-
-
-#define ERR_UNKNOWNMODE(servername, nick, mode) \
-	":" + servername + " 472 " + nick + " " + mode + " :is unknown mode char to me for that channel\n"
-// ERR_INVITEONLYCHAN (473)	// join
-#define ERR_INVITEONLYCHAN(servername, nick, channel) \
-	":" + servername + " 473 " + nick + " #" + channel + " :Cannot join channel (+i)\n"
-// ERR_BANNEDFROMCHAN (474)	// join
-#define ERR_BANNEDFROMCHAN(servername, nick, channel) \
-	":" + servername + " 474 " + nick + " #" + channel + " :Cannot join channel (+b)\n"
-
-// ERR_BADCHANMASK (476)		// join, kick
-#define ERR_BADCHANMASK(servername, nick) \
-	":" + servername + " 476 * " + nick + " :Bad Channel Mask\n"
-
-
-ERR_UMODEUNKNOWNFLAG (501)	// mode
-// ERR_USERSDONTMATCH (502)	// mode
-#define ERR_USERSDONTMATCH(servername, nick) \
-	":" + servername + " 502 " + nick + " :Cant change mode for other users\n"
-*/
-
+// RPL_NOTICE					// notice
+# define RPL_NOTICE(nick, user, ip, receive, msg)	\
+	":" + nick + "!" + user + "@" + ip + " NOTICE " + receive + " " + msg + "\r\n"
 
 #endif
