@@ -42,6 +42,15 @@ void Command::mode(std::map<std::string, Channel *> &channelsInServer) {
 	Channel *channel = channelsInServer[channelName];
 	int argIndex = 0;
 
+	if (numParam == 2) {
+		sendReply(RPL_CHANNELMODEIS(servername, nick, channelName, channel->getChannelMode()));
+		return;
+	}
+	if (!channel->isOperator(nick)) {
+		sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, channelName));
+		return;
+	}
+
 	if (modeString[0] == '+') {
 		for (int i = 1; modeString[i]; ++i) {
 			if (modeString[i] == 'i')
@@ -55,12 +64,11 @@ void Command::mode(std::map<std::string, Channel *> &channelsInServer) {
 				}
 			} else if (modeString[i] == 'o') {
 				std::string targetName = modeArguments[argIndex++];
-				if (channel->isOperator(nick))
-					channel->addOperator(targetName);
+				channel->addOperator(targetName);
 			} else if (modeString[i] == 'l') {
 				int n = stoi(modeArguments[argIndex++]);
-				if (channel->isOperator(nick))
-					channel->setMemberLimit(n);
+				channel->onMode(USER_LIMIT);
+				channel->setMemberLimit(n);
 			}
 		}
 	} else if (modeString[0] == '-') {
@@ -78,13 +86,11 @@ void Command::mode(std::map<std::string, Channel *> &channelsInServer) {
 				}
 			} else if (modeString[i] == 'o') {
 				std::string targetName = modeArguments[argIndex++];
-				if (channel->isOperator(nick))
-					channel->deleteOperator(targetName);
+				channel->deleteOperator(targetName);
 			} else if (modeString[i] == 'l') {
-				if (channel->isOperator(nick))
-					channel->setMemberLimit(atoi("-1")); // memberMax
+				channel->offMode(USER_LIMIT);
+				channel->setMemberLimit(atoi("-1")); // memberMax
 			}
 		}
-	} else if (numParam == 2)
-		sendReply(RPL_CHANNELMODEIS(servername, nick, channelName, channel->getChannelMode()));
+	}
 }

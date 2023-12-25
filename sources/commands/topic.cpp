@@ -59,7 +59,13 @@ void Command::topic(std::map<std::string, Channel *> &channelsInServer) {
 		return;
 	}
 
-	if (!channelPtr->isModeOn('t') || !channelPtr->isOperator(nick)) {
+	if (numParam == 2) {
+		sendReply(RPL_TOPIC(servername, nick, targetChannel, newTopic));
+		return;
+	} else if (!channelPtr->isModeOn('t') || channelPtr->getTopic() == "") {
+		sendReply(RPL_NOTOPIC(servername, nick, targetChannel));
+		return;
+	} else if (!channelPtr->isOperator(nick)) {
 		sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, targetChannel));
 		return;
 	}
