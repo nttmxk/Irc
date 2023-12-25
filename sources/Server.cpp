@@ -146,8 +146,7 @@ void Server::runCommand(int clientFd) {
 				command.mode(channels);
 				break;
 			case (NOTICE):
-				command.passCommand();
-//				command.notice();
+				command.notice(clients, channels);
 				break;
 			case (PRIVMSG):
 				command.privmsg(clients, channels);

@@ -88,13 +88,11 @@ void Command::privmsg(std::map<int, Client*> clients, std::map<std::string, Chan
                 this->sendReply(ERR_CANNOTSENDTOCHAN(servername, nick, target));
                 return;
             }
-            // message를 <target>channels 안의 모든 client에게 전달
 			std::string response = RPL_PRIVMSG(nick, nick, servername, target, message);
             sendToChannel(nick, response, targetChannel);
         }
         else
         {
-            // send target client
 		    std::vector<std::string> targetClientList = splitByComma(target);
 			std::vector<std::string>::iterator it = targetClientList.begin();
 			for ( ; it != targetClientList.end(); it++) {
@@ -105,22 +103,18 @@ void Command::privmsg(std::map<int, Client*> clients, std::map<std::string, Chan
 				} else {
 					std::string targetNick = targetClient->getNickname();
 					std::string response = RPL_PRIVMSG(nick, nick, servername, targetNick, message);
-					std::cout << response << std::endl; // TEST 
 					if (send(targetClient->getClientFd(), response.c_str(), response.length(), 0) < 0)
 							exit(-1);
-					// this->sendReply(RPL_AWAY(servername, sendNick, message));
 				}
 			}
         }
     }
     else {
 		messageIndex += numParam + 1;
-        // PRIVMSG targetNick (message 없을 시)
 		if (numParam == 2) {
 			this->sendReply(ERR_NOTEXTTOSEND(servername, nick));
 			return;
 		}
-        // PRIVMSG targetNick aaa aaa :msg (토큰 많이 들어 올 시)
         return;
     }
 }
