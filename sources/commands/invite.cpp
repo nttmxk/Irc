@@ -65,10 +65,9 @@ void Command::invite(std::map<int, Client *> &clientsInServer, std::map<std::str
 		return;
 	}
 
+	if (!channelPtr->isInvitedMember(targetNick))
+		channelPtr->addInvitedList(targetNick);
 	sendReply(RPL_INVITING(servername, nick, targetChannel, targetNick));
-	std::string inviteMsg = USER_ADDR(nick, client->getUserName(), "irc.local") \
- + " invite :" + targetChannel = "\r\n";
-
 	Client *clientPtr = findClientByNick(clientsInServer, targetNick);
 	if (clientPtr == nullptr)
 		return;

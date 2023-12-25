@@ -36,12 +36,6 @@ void Command::mode(std::map<std::string, Channel *> &channelsInServer) {
 	if (channelName[0] != '#')
 		return;
 	if (channelsInServer.find(channelName) == channelsInServer.end()) {
-		std::clog << "[Log] mode: chanName:" << channelName << '\n';
-		std::map<std::string, Channel *>::iterator it = channelsInServer.begin();
-		while (it != channelsInServer.end()) {
-			std::clog << "ChanList: " << it->first << '\n';
-			it++;
-		}
 		sendReply(ERR_NOSUCHCHANNEL(servername, nick, channelName));
 		return;
 	}

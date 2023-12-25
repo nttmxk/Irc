@@ -101,6 +101,10 @@ bool Channel::isInvitedMember(const std::string targetNick) {
 	return ret != this->invitedUsers.end();
 }
 
+void Channel::addInvitedList(std::string targetNick) {
+	this->invitedUsers.push_back(targetNick);
+}
+
 void Channel::addInvitedMember(Client *client) {
 	std::string nickname = client->getNickname();
 	if (isInvitedMember(nickname))
