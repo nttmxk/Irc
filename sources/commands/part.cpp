@@ -57,8 +57,8 @@ void Command::part(std::map<std::string, Channel*> &channelsInServer) {
         }
 
         // do part
-        std::string partMsg = ":" + USER_ADDR(nick, client->getUserName(), "127.0.0.1") \
-                                + " PART " + targetChannel + reason + "\r\n";
+        std::string partMsg = ":" + USER_ADDR(nick, nick, "irc.local") \
+                                + " PART :" + targetChannel + reason + "\r\n";
 
         channelPtr->deleteMember(nick);
 		client->quitChannel(targetChannel);

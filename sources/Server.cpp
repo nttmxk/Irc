@@ -92,7 +92,7 @@ void Server::readMessage(int clientFd) {
 	else if (readSize > 1 && buffer[readSize - 2] == '\r' && buffer[readSize - 1] == '\n')
 	{
 		message[clientFd].append(buffer);
-		std::clog << "[Log] " << clientFd << ":New message\n" << message[clientFd] << '\n';
+		std::clog << "[Log] " << clientFd << ":" << message[clientFd];
 		runCommand(clientFd);
 		message[clientFd].clear();
 	}
@@ -115,13 +115,13 @@ void Server::runCommand(int clientFd) {
 				command.pass(_pwd);
 				break;
 			case (NICK):
-				command.nick(clients);
+				command.nick(clients, channels);
 				break;
 			case (USER):
 				command.user(startTime);
 				break;
 			case (cOPER):
-				command.oper(clients, _pwd); // param fix needed
+				command.oper(clients, _pwd);
 				break;
 			case (JOIN):
 				command.join(channels);
@@ -130,10 +130,10 @@ void Server::runCommand(int clientFd) {
 				command.part(channels);
 				break;
 			case (INVITE):
-				command.invite(channels);
+				command.invite(clients, channels);
 				break;
 			case (KICK):
-				command.kick(channels);
+				command.kick(clients ,channels);
 				break;
 			case (QUIT):
 				command.quit(channels);
@@ -167,7 +167,10 @@ void Server::runCommand(int clientFd) {
 			noCommand = false;
 		}
 		if (command.isConnectEnd)
+		{
 			deleteClient(clientFd);
+			break;
+		}
 	}
 }
 

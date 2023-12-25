@@ -16,7 +16,7 @@ private:
 	std::string	userName;
 	std::string realName;
 //	std::string	password;
-//	std::string modeStr;
+	std::string modeStr;
 
 	bool		_authorized;
 
@@ -49,7 +49,7 @@ public:
 	bool	isAuthorized() const;
 
 	bool	isServerOper() const;
-	void	setServerOper();
+	void	setServerOper(bool op);
 };
 
 #endif

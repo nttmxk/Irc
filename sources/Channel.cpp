@@ -19,7 +19,6 @@ Channel::Channel(std::string const name, Client* creator)
 	mode[OPER] = false;
 	mode[USER_LIMIT] = false;
 
-	
 	addMember(creator, true);
 }
 
@@ -84,6 +83,7 @@ void Channel::addMember(Client* client, bool isOper) {
 }
 
 void Channel::deleteMember(const std::string targetNick) {
+//	std::clog << "[Log] deleteMember\n";
 	if (!isInChannel(targetNick))
 		return;
 	this->members.erase(targetNick);
@@ -127,11 +127,13 @@ std::string Channel::getMemberStr() {
 
 /* Operator */
 bool Channel::isOperator(const std::string targetNick) const {
+//	std::clog << "[Log] isOperator\n";
 	std::vector<std::string>::const_iterator ret = std::find(operators.begin(), operators.end(), targetNick);
 	return ret != this->operators.end();
 }
 
 void Channel::addOperator(const std::string targetNick) {
+//	std::clog << "[Log] addOperator\n";
 	if (!isOperator(targetNick)) {
 		deleteNormalMember(targetNick);
 		this->operators.push_back(targetNick);

@@ -52,7 +52,7 @@ void Command::join(std::map<std::string,Channel*> &channelsInServer) {
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "JOIN"));
 		return;
 	}
-	std::clog << "[Log] join:" << '\n';
+	std::clog << "[Log] join:" << tokens[messageIndex+1] << '\n';
 
 	std::vector<std::string> channels;
 	std::vector<std::string> keys;
@@ -100,11 +100,11 @@ void Command::join(std::map<std::string,Channel*> &channelsInServer) {
 			// join channel
 			channelPtr->isInvitedMember(nick) ?
 			channelPtr->addInvitedMember(client) : channelPtr->addMember(client, false);
-			client->joinChannel(channels[i]);
 		}
+		client->joinChannel(channels[i]);
 
 		// 1. Join Msg -> 채널로 보내는 건가..?
-		std::string joinMsg = RPL_JOIN(nick, "127.0.0.1", channels[i]);
+		std::string joinMsg = RPL_JOIN(nick, "irc.local", channels[i]);
 		//sendToChannel(joinMsg, channelPtr);
 //		sendReply(joinMsg); // sendToChannel 해버리면 이미 받았다?
 		// 2. 참여한 채널에 토픽이 잇으면 RPL_TOPIC (332)

@@ -20,7 +20,7 @@
 * Message Examples:
 *	- :dan-!d@localhost INVITE Wiz #test    ; dan-이 Wiz를 #test 채널로 초대함.
 */
-void Command::invite(std::map<std::string, Channel*> &channelsInServer) {
+void Command::invite(std::map<int, Client*> &clientsInServer, std::map<std::string, Channel*> &channelsInServer) {
     int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
@@ -44,13 +44,13 @@ void Command::invite(std::map<std::string, Channel*> &channelsInServer) {
     }
 
     // 클라이언트가 타겟 채널에 참여하고 있는지 확인
-    if (channelPtr->isInChannel(nick) == false) {
+    if (!channelPtr->isInChannel(nick)) {
         sendReply(ERR_NOTONCHANNEL(servername, nick, targetChannel));
 		return;
     }
 
     // 채널이 초대 전용 모드일 경우, 클라이언트가 초대권한이 있는지 확인
-    if (channelPtr->isModeOn('i') && channelPtr->isOperator(nick) == false) {
+    if (channelPtr->isModeOn('i') && !channelPtr->isOperator(nick)) {
         sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, targetChannel));
 		return;
     }
@@ -62,8 +62,11 @@ void Command::invite(std::map<std::string, Channel*> &channelsInServer) {
     }
 
     sendReply(RPL_INVITING(servername, nick, targetChannel, targetNick));
-    std::string inviteMsg = USER_ADDR(nick, client->getUserName(), "127.0.0.1") \
-                                + " invite " + targetChannel = "\r\n";
-    // 이걸 targetNick에거 보내야함
+    std::string inviteMsg = USER_ADDR(nick, client->getUserName(), "irc.local") \
+                                + " invite :" + targetChannel = "\r\n";
 
+	Client* clientPtr = findClientByNick(clientsInServer, targetNick);
+	if (clientPtr == nullptr)
+		return;
+//	sendByFd(clientPtr->getClientFd(), inviteMsg);
 }

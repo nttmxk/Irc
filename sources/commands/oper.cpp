@@ -1,22 +1,11 @@
 #include "../../includes/Command.hpp"
 #include <map>
 
-// 서버 클라이언트 리스트에서 타겟 유저 찾아서 객체 포인터를 리턴, 없으면 NULL 리턴
-static Client* searchByNickname(std::string nickname, std::map<int, Client*> clients) {
-	std::map<int, Client*>::iterator it = clients.begin();
-	for( ; it != clients.end(); it++) {
-		if (it->second->getNickname() == nickname) {
-			return it->second;
-		}
-	}
-	return NULL;
-}
-
 // OPER 파라미터로 받아온 타겟 닉네임이 유효한지 확인
 // 서버 클라이언트 리스트에 속해 있으면, 유효한 호스트에 연결되어 있음을 의미
-static bool isValidName(const Client* target) {
-	return target == NULL ? false : true;
-}
+//static bool isValidName(const Client* target) {
+//	return target == NULL ? false : true;
+//}
 
 // OPER 파라미터로 받아온 비밀번호가 유효한지 확인
 // OPER를 실행한 클라이언트가 서버운영자이고, 
@@ -27,7 +16,7 @@ static bool isValidPassword(const Client* client, const std::string password, co
 
 	// 클라이언트가 서버 운영자인지 확인
 	// 클라이언트의 유저 모드에 'O'가 있으면 운영자
-	if (client->isServerOper() == false)
+	if (!client->isServerOper())
 		return false;
 
 	// 클라이언트가 서버 운영자 중 한 명이면 password 유효한지 확인
@@ -58,20 +47,19 @@ void Command::oper(std::map<int, Client*> &clientsInServer, const std::string pw
 	std::string targetNick = tokens[messageIndex + 1];
 	std::string password = tokens[messageIndex + 2];
 	messageIndex += numParam + 1;
-	Client* target = searchByNickname(targetNick, clientsInServer);
+	Client* target = findClientByNick(clientsInServer, targetNick);
 
-	if (isValidName(target) == false) {
+	if (target == nullptr) {
 		this->sendReply(ERR_NOOPERHOST(servername, nick));
 		return;
 	}
 	
-	if (isValidPassword(client, password, pwd) == false) {
+	if (!isValidPassword(client, password, pwd)) {
 		this->sendReply(ERR_PASSWDMISMATCH(servername, nick));
 		return;
 	}
 
 	// 타켓 유저를 서버 운영자로 만들기
-	target->setServerOper();
+	target->setServerOper(true);
 	this->sendReply(RPL_YOUREOPER(servername, nick));
-
 }

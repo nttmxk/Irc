@@ -49,7 +49,7 @@ void Client::joinChannel(std::string channelName) {
 }
 
 void Client::quitChannel(std::string channelName) {
-	joinedChannels.erase(channelName);
+	joinedChannels.erase(std::remove(joinedChannels.begin(), joinedChannels.end(), channelName), joinedChannels.end());
 }
 
 void Client::quitAllChannels() {
@@ -64,8 +64,9 @@ bool Client::isServerOper() const {
 	return modeStr.find(OPERATOR) != std::string::npos;
 }
 
-void Client::setServerOper() {
-	if (this->isServerOper())
-		return;
-	this->modeStr += 'O';
+void Client::setServerOper(bool op) {
+	if (op)
+		modeStr = 'O';
+	else
+		modeStr = "";
 }
