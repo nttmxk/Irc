@@ -5,6 +5,7 @@
 # include "../includes/Client.hpp"
 # include "../includes/Channel.hpp"
 
+# include <sys/socket.h>
 # include <string>
 # include <vector>
 # include <map>
@@ -156,8 +157,8 @@ public:
 	 *	- :dan!~h@localhost PRIVMSG #coolpeople :Hi everyone!			; dan에서 채널 #coolpeople로의 메시지
 	 */
 
-	void privmsg(std::vector<Client&> targets, std::string message) const;
-	void privmsg(std::vector<Channel&> targets, std::string message) const;
+	void sendToChannel(std::string nick, std::string message, Channel* channel);
+	void privmsg(std::map<int, Client*> clients, std::map<std::string, Channel*> channels);
 
 	/* NOTICE <target>{,<target>} <text to be sent>
 	 * 사용자 간에 또는 채널에 노티스를 보냄. 
