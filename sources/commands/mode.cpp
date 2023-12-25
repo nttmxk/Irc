@@ -58,14 +58,26 @@ void Command::mode(std::map<std::string, Channel *> &channelsInServer) {
 			else if (modeString[i] == 't')
 				channel->onMode(TOPIC);
 			else if (modeString[i] == 'k') {
+				if (modeArguments[argIndex] == "") {
+					sendReply(ERR_NEEDMOREPARAMS(servername, nick, "MODE"));
+					return;
+				}
 				if (channel->isOperator(nick)) {
 					channel->onMode(KEY);
 					channel->setKey(modeArguments[argIndex++]);
 				}
 			} else if (modeString[i] == 'o') {
+				if (modeArguments[argIndex] == "") {
+					sendReply(ERR_NEEDMOREPARAMS(servername, nick, "MODE"));
+					return;
+				}
 				std::string targetName = modeArguments[argIndex++];
 				channel->addOperator(targetName);
 			} else if (modeString[i] == 'l') {
+				if (modeArguments[argIndex] == "") {
+					sendReply(ERR_NEEDMOREPARAMS(servername, nick, "MODE"));
+					return;
+				}
 				int n = stoi(modeArguments[argIndex++]);
 				channel->onMode(USER_LIMIT);
 				channel->setMemberLimit(n);
@@ -85,6 +97,10 @@ void Command::mode(std::map<std::string, Channel *> &channelsInServer) {
 					channel->setKey("");
 				}
 			} else if (modeString[i] == 'o') {
+				if (modeArguments[argIndex] == "") {
+					sendReply(ERR_NEEDMOREPARAMS(servername, nick, "MODE"));
+					return;
+				}
 				std::string targetName = modeArguments[argIndex++];
 				channel->addNormalMember(targetName);
 			} else if (modeString[i] == 'l') {
