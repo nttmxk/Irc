@@ -2,9 +2,12 @@
 
 
 void Command::ping() {
-	if (client->getFlag() != _connect)
-		return;
 	int numParam = getNumParameter();
+	if (client->getFlag() != _connect)
+	{
+		messageIndex += numParam + 1;
+		return;
+	}
 	const std::string servername = "irc.local";
 	const std::string nick = this->client->getNickname();
 

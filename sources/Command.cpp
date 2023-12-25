@@ -1,12 +1,5 @@
 #include "../includes/Command.hpp"
 #include <iostream> // cout
-#include <sys/socket.h> // send
-
-//Command::Command()
-//	: client(NULL), message("") {}
-//Command::Command(const Command& abj) { (void)abj; }
-//Command::~Command() {}
-
 
 Command::Command(Client * _client, const std::string _message) 
 	: client(_client), message(_message), messageIndex(0), isConnectEnd(false) {
@@ -51,11 +44,10 @@ int Command::getCommandType()
 }
 
 void Command::sendReply(std::string replyMsg) {
-
 	std::string tmp = replyMsg[replyMsg.length() - 1] == '\n' ? replyMsg : replyMsg + "\n";
 	std::cout << ">> Sending message to client: " << tmp;
 	if (send(client->getClientFd(), tmp.c_str(), tmp.length(), 0) == -1)
-		throw std::runtime_error("Error sending message");
+		exit(1);
 }
 
 bool Command::isTokenEnd()
@@ -113,4 +105,8 @@ Client* Command::findClientByNick(std::map<int, Client*> &clientsInServer, std::
 			return it->second;
 	}
 	return nullptr;
+}
+
+int	Command::sendByFD(int fd, std::string message) {
+	return send(fd, message.c_str(), message.length(), 0);
 }

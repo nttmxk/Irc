@@ -21,9 +21,12 @@
 *	- :dan-!d@localhost INVITE Wiz #test    ; dan-이 Wiz를 #test 채널로 초대함.
 */
 void Command::invite(std::map<int, Client*> &clientsInServer, std::map<std::string, Channel*> &channelsInServer) {
-	if (client->getFlag() != _connect)
-		return;
     int numParam = getNumParameter();
+	if (client->getFlag() != _connect)
+	{
+		messageIndex += numParam + 1;
+		return;
+	}
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
@@ -70,5 +73,5 @@ void Command::invite(std::map<int, Client*> &clientsInServer, std::map<std::stri
 	Client* clientPtr = findClientByNick(clientsInServer, targetNick);
 	if (clientPtr == nullptr)
 		return;
-//	sendByFd(clientPtr->getClientFd(), inviteMsg);
+	sendByFD(clientPtr->getClientFd(), inviteMsg);
 }

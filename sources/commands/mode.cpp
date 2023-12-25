@@ -1,9 +1,12 @@
 #include "../../includes/Command.hpp"
 
 void Command::mode(std::map<std::string, Channel*> &channelsInServer) {
-	if (client->getFlag() != _connect)
-		return;
 	int numParam = getNumParameter();
+	if (client->getFlag() != _connect)
+	{
+		messageIndex += numParam + 1;
+		return;
+	}
 	std::string	channelName;
 	std::string modeString;
 	std::string modeArguments[3];

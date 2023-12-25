@@ -46,10 +46,6 @@ private:
 	int 						messageIndex;
 	int 						tokenSize;
 
-//	Command();
-//	Command(const Command& abj);
-//	~Command();
-
 public:
 	Command(Client * _client, const std::string _message);
 	int		getCommandType();
@@ -65,6 +61,7 @@ private:
 	std::vector<std::string> splitByComma(std::string str);
 	Channel* isChannelExist(std::map<std::string,Channel*> &channelsInServer, std::string channelName);
 	Client* findClientByNick(std::map<int, Client*> &clientsInServer, std::string nick);
+	int sendByFD(int fd, std::string message);
 
 public:
 

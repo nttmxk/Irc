@@ -48,17 +48,19 @@ void Server::addClient(void) {
 	socklen_t			clientAddressSize = sizeof(clientAddress);
 
 	if ((clientFd = accept(serverFd, (struct sockaddr *) &clientAddress,
-						   &clientAddressSize)) == -1)
-		throw std::runtime_error("Error\nCannot open client socket\n");
+						   &clientAddressSize)) == -1) {
+		std::cerr << "Error\nCannot open client socket\n";
+		exit(1);
+	}
 
 	if (clientFd >= USER_MAX + 4) {
 		close(clientFd);
-		throw std::runtime_error("Error\nReached USER_MAX\n");
+		std::cerr << "Error\nReached USER_MAX\n";
 	}
 
 	if (fcntl(clientFd, F_SETFL, O_NONBLOCK) == -1) {
 		close(clientFd);
-		throw std::runtime_error("Error\nfcntl\n");
+		std::cerr << "Error\nfcntl\n";
 	}
 
 	clients[clientFd] = new Client(clientFd);
@@ -69,6 +71,7 @@ void Server::addClient(void) {
 void Server::deleteClient(int clientFd) {
 	setPoll(clientFd, -1, 0, 0);
 	message.erase(clientFd);
+	delete clients[clientFd];
 	clients.erase(clientFd);
 	close(clientFd);
 }
@@ -77,14 +80,16 @@ void Server::readMessage(int clientFd) {
 	int readSize = recv(clientFd, buffer, BUF_LEN - 1, MSG_DONTWAIT);
 
 	if (readSize < 0) {
+		std::clog << clientFd << ": Message read size < 0\n";
+		message[clientFd] = "QUIT :disconnected\r\n";
+		runCommand(clientFd);
 		deleteClient(clientFd);
-		throw std::runtime_error("Error\nMessage read size < 0\n");
 	}
 	buffer[readSize] = 0;
-//	std::clog << "Message from " << clientFd << " with rSize: " << readSize << '\n' << buffer << '\n';
+	std::clog << "Message from " << clientFd << " with rSize:" << readSize << '\n' << buffer;
 	if (readSize == 0)
 	{
-		std::clog << "[Log] rSize=0 " << clientFd << ": Quit\n";
+//		std::clog << "[Log] rSize=0 " << clientFd << ": Quit\n";
 		message[clientFd] = "QUIT :disconnected\r\n";
 		runCommand(clientFd);
 		deleteClient(clientFd);
@@ -92,7 +97,7 @@ void Server::readMessage(int clientFd) {
 	else if (readSize > 1 && buffer[readSize - 2] == '\r' && buffer[readSize - 1] == '\n')
 	{
 		message[clientFd].append(buffer);
-		std::clog << "[Log] " << clientFd << ":" << message[clientFd];
+//		std::clog << "[Log] " << clientFd << ":" << message[clientFd];
 		runCommand(clientFd);
 		message[clientFd].clear();
 	}
@@ -149,7 +154,6 @@ void Server::runCommand(int clientFd) {
 //				command.notice();
 				break;
 			case (PRIVMSG):
-				// command.passCommand();
 				command.privmsg(clients, channels);
 				break;
 			case (PING):

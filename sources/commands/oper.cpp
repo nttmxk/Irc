@@ -1,11 +1,4 @@
 #include "../../includes/Command.hpp"
-#include <map>
-
-// OPER 파라미터로 받아온 타겟 닉네임이 유효한지 확인
-// 서버 클라이언트 리스트에 속해 있으면, 유효한 호스트에 연결되어 있음을 의미
-//static bool isValidName(const Client* target) {
-//	return target == NULL ? false : true;
-//}
 
 // OPER 파라미터로 받아온 비밀번호가 유효한지 확인
 // OPER를 실행한 클라이언트가 서버운영자이고, 
@@ -34,9 +27,12 @@ static bool isValidPassword(const Client* client, const std::string password, co
  * 성공 시(name, password가 correct, 유효한 host에서 연결 중), 381을 user에게 보냄
  */
 void Command::oper(std::map<int, Client*> &clientsInServer, const std::string pwd) {
-	if (client->getFlag() != _connect)
-		return;
 	int numParam = getNumParameter();
+	if (client->getFlag() != _connect)
+	{
+		messageIndex += numParam + 1;
+		return;
+	}
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
@@ -63,5 +59,5 @@ void Command::oper(std::map<int, Client*> &clientsInServer, const std::string pw
 
 	// 타켓 유저를 서버 운영자로 만들기
 	target->setServerOper(true);
-	this->sendReply(RPL_YOUREOPER(servername, nick));
+	sendByFD(target->getClientFd(), RPL_YOUREOPER(servername, targetNick));
 }

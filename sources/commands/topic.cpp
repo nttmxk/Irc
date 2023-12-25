@@ -28,9 +28,12 @@
 *	- TOPIC #test                     ; "#test" 채널의 토픽을 확인.
 */
 void Command::topic(std::map<std::string, Channel*> &channelsInServer) {
-	if (client->getFlag() != _connect)
-		return;
     int numParam = getNumParameter();
+	if (client->getFlag() != _connect)
+	{
+		messageIndex += numParam + 1;
+		return;
+	}
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
@@ -57,7 +60,6 @@ void Command::topic(std::map<std::string, Channel*> &channelsInServer) {
 		return;
     }
 
-    // 채널이 초대 전용 모드일 경우, 클라이언트가 초대권한이 있는지 확인
     if (channelPtr->isModeOn('t') && channelPtr->isOperator(nick) == false) {
         sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, targetChannel));
 		return;

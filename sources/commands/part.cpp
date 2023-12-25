@@ -25,9 +25,12 @@
 *	- :dan-!d@localhost PART #test    ; dan-이 채널 #test를 나감.
 */
 void Command::part(std::map<std::string, Channel*> &channelsInServer) {
-	if (client->getFlag() != _connect)
-		return;
 	int numParam = getNumParameter();
+	if (client->getFlag() != _connect)
+	{
+		messageIndex += numParam + 1;
+		return;
+	}
     std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
@@ -38,7 +41,6 @@ void Command::part(std::map<std::string, Channel*> &channelsInServer) {
 	}
 	
 	std::vector<std::string> channels = splitByComma(tokens[messageIndex + 1]);
-	std::string reason = (numParam > 2) ? tokens[messageIndex + 2] : "";
 	messageIndex += numParam + 1;
 
     std::vector<std::string>::iterator it = channels.begin();
@@ -60,12 +62,12 @@ void Command::part(std::map<std::string, Channel*> &channelsInServer) {
 
         // do part
         std::string partMsg = ":" + USER_ADDR(nick, nick, "irc.local") \
-                                + " PART :" + targetChannel + reason + "\r\n";
+                                + " PART :" + targetChannel + "\r\n";
 
         channelPtr->deleteMember(nick);
 		client->quitChannel(targetChannel);
 		sendReply(partMsg);
-//		sendToChannel(partMsg, channelPtr);
+		sendToChannel(nick, partMsg, channelPtr);
 
 		if (channelPtr->getMemberNum() == 0)
 		{

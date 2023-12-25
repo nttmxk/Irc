@@ -31,9 +31,12 @@
 */
 
 void Command::kick(std::map<int, Client*> &clientsInServer, std::map<std::string, Channel*> &channelsInServer) {
-	if (client->getFlag() != _connect)
-		return;
     int numParam = getNumParameter();
+	if (client->getFlag() != _connect)
+	{
+		messageIndex += numParam + 1;
+		return;
+	}
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
@@ -78,14 +81,15 @@ void Command::kick(std::map<int, Client*> &clientsInServer, std::map<std::string
             return;
         }
 
-        std::string kickMsg = USER_ADDR(nick, client->getUserName(), "irc.local") \
-                                + " KICK :" + targetChannel + " " + targetNick + "\r\n";
+        std::string kickMsg = ":" + USER_ADDR(nick, nick, "irc.local") \
+                                + " KICK " + targetChannel + " " + targetNick + + " " + comment + "\r\n";
 
 		Client* clientPtr = findClientByNick(clientsInServer, targetNick);
 		if (clientPtr == nullptr)
 			return;
 		clientPtr->quitChannel(targetChannel);
-//		sendToChannel(kickMsg, channelPtr);
-        channelPtr->deleteMember(targetNick);
+		sendReply(kickMsg);
+		sendToChannel(nick, kickMsg, channelPtr);
+		channelPtr->deleteMember(targetNick);
     }
 }
