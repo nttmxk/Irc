@@ -72,5 +72,5 @@ void Command::invite(std::map<int, Client *> &clientsInServer, std::map<std::str
 	Client *clientPtr = findClientByNick(clientsInServer, targetNick);
 	if (clientPtr == nullptr)
 		return;
-	sendByFD(clientPtr->getClientFd(), inviteMsg);
+	sendByFD(clientPtr->getClientFd(), RPL_INVITED(servername,nick, targetChannel, targetNick));
 }

@@ -36,7 +36,9 @@
 	":" + servername + " 333 " + nick + " " + channel + " " + userAddr + " :" + time + "\r\n"
 // RPL_INVITING (341)			// invite
 # define RPL_INVITING(servername, nick, channel, targetUser) \
-	":" + servername + " 341 " + nick + " " + targetUser + " :#" + channel + "\r\n"
+	":" + servername + " 341 " + nick + " " + targetUser + " :" + channel + "\r\n"
+# define RPL_INVITED(servername, nick, channel, targetUser) \
+	":" + servername + " 345 " + " :" + targetUser + "has been invited by " + nick + " to " + channel + "\r\n"
 // RPL_NAMREPLY (353)			// join
 # define RPL_NAMREPLY(servername, nick, channel, users) \
 	":" + servername + " 353 " + nick + " = " + channel + " :" + users + "\r\n"
