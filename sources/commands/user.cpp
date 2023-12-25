@@ -17,15 +17,16 @@ void Command::user(std::string time) {
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
+	if (numParam < 5) {
+		messageIndex += numParam + 1;
+		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "USER"));
+		return;
+	}
 	std::string userName = tokens[messageIndex + 2];
 	std::string realName = tokens[messageIndex + 4];
 	messageIndex += numParam + 1;
 	std::clog << "[Log] user:" << userName << "," << realName << '\n';
 
-	if (numParam < 5) {
-		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "USER"));
-		return;
-	}
 	if (userName.length() < 1 || realName.length() < 1) {
 		this->sendReply(ERR_NEEDMOREPARAMS(servername, nick, "USER"));
 		return;
@@ -37,7 +38,7 @@ void Command::user(std::string time) {
 
 	client->setUserName(userName);
 	client->setRealName(realName);
-	client->checkAuthorization();
+	client->setAuthorization();
 	this->sendReply(RPL_WELCOME(servername, nick));
 	this->sendReply(RPL_YOURHOST(servername, nick, "42.42.42"));
 	this->sendReply(RPL_CREATED(servername, nick, time));

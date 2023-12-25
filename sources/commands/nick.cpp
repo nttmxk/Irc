@@ -54,7 +54,7 @@ static bool isNicknameAlreadyInUse(const int client_fd, const std::string nickna
  * 닉네임 파라미터 못받았을 경우, 431 보낸 후 커멘드 무시
  * 닉네임 변경 성공 시, <old nickname>!<user>@localhost NICK <new nickname> 출력 ex) oldhio!root@127.0.0.1 NICK newhio
  */
-void Command::nick(std::map<int, Client*> &clients) {
+void Command::nick(std::map<int, Client*> &clients, std::map<std::string, Channel*> &channelsInServer) {
 	int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
@@ -71,8 +71,7 @@ void Command::nick(std::map<int, Client*> &clients) {
 		this->sendReply(ERR_NONICKNAMEGIVEN(servername, nick));
 		return;
 	} 
-	// 유효한 비밀번호인지 확인
-	if (!isValidNickname(newNickname)) { 
+	if (!isValidNickname(newNickname)) {
 		this->sendReply(ERR_ERRONEUSNICKNAME(servername, nick, newNickname));
 		return;
 	} 
@@ -80,9 +79,28 @@ void Command::nick(std::map<int, Client*> &clients) {
 	if (isNicknameAlreadyInUse(client->getClientFd(), newNickname, clients)) {
 		this->sendReply(ERR_NICKNAMEINUSE(servername, nick, newNickname));
 		return;
-	} 
-	
-	client->setNickname(newNickname);
+	}
 
-	// ERR_NICKCOLLISION (436) - 변경 중 서버와 충돌이 발생했을 때...?
+	std::string nickMsg = ":" + USER_ADDR(nick, nick, "irc.local") \
+                                + " NICK :" + newNickname + "\r\n";
+	client->setNickname(newNickname);
+	sendReply(nickMsg);
+	if (client->isAuthorized()) {
+		std::vector <std::string> joinedChannels = client->getJoinedChannels();
+		std::vector<std::string>::iterator it = joinedChannels.begin();
+
+		for (; it != joinedChannels.end(); it++) {
+			std::string targetChannel = *it;
+
+			Channel *channelPtr = isChannelExist(channelsInServer, targetChannel);
+			if (channelPtr == nullptr || !(channelPtr->isInChannel(nick)))
+				continue;
+			if (channelPtr->isOperator(nick))
+				channelPtr->addMember(client, true);
+			else
+				channelPtr->addMember(client, false);
+			channelPtr->deleteMember(nick);
+//			sendToChannel(nickMsg, channelPtr);
+		}
+	}
 }

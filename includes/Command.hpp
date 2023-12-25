@@ -63,15 +63,16 @@ private:
 	int	getParamsCnt();
 	std::vector<std::string> splitByComma(std::string str);
 	Channel* isChannelExist(std::map<std::string,Channel*> &channelsInServer, std::string channelName);
+	Client* findClientByNick(std::map<int, Client*> &clientsInServer, std::string nick);
 
 public:
 
 /* Connection Registration */
 	void pass(const std::string pwd);
-	void nick(std::map<int, Client*> &clients);
+	void nick(std::map<int, Client*> &clients, std::map<std::string, Channel*> &channelsInServer);
 	void user(std::string time);
 	void oper(std::map<int, Client*> &clientsInServer, const std::string pwd);
-	void quit();
+	void quit(std::map<std::string, Channel*> &channelsInServer);
 	void mode(std::map<std::string, Channel*> &channelsInServer);
 	void ping();
 
@@ -80,8 +81,8 @@ public:
 	void who(std::map<std::string,Channel*> &channelsInServer);
 	void part(std::map<std::string, Channel*> &channelsInServer);
 	void topic(std::map<std::string, Channel*> &channelsInServer);
-	void invite(std::map<std::string,Channel*> &channelsInServer);
-	void kick(std::map<std::string, Channel*> &channelsInServer);
+	void invite(std::map<int, Client*> &clientsInServer, std::map<std::string,Channel*> &channelsInServer);
+	void kick(std::map<int, Client*> &clientsInServer, std::map<std::string, Channel*> &channelsInServer);
 
 /* Server Queries and Commands */
 	// https://modern.ircdocs.horse/#mode-message 내용이 너무 많아서... 링크 달아둘게요

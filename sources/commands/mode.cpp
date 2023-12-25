@@ -17,7 +17,7 @@ void Command::mode(std::map<std::string, Channel*> &channelsInServer) {
 	channelName = tokens[messageIndex + 1];
 	modeString = tokens[messageIndex + 2];
 
-	std::clog << "[Log] mode:" << channelName << "," << modeString << '\n';
+//	std::clog << "[Log] mode:" << channelName << "," << modeString << '\n';
 
 	if (numParam > 6)
 	{
@@ -101,7 +101,7 @@ void Command::mode(std::map<std::string, Channel*> &channelsInServer) {
 			else if (modeString[i] == 'l')
 			{
 				if (channel->isOperator(nick))
-					channel->setMemberLimit(atoi("4242")); // memberMax
+					channel->setMemberLimit(atoi("-1")); // memberMax
 			}
 		}
 	} else if (numParam == 2)

@@ -69,7 +69,6 @@ void Server::addClient(void) {
 void Server::deleteClient(int clientFd) {
 	setPoll(clientFd, -1, 0, 0);
 	message.erase(clientFd);
-	// QUIT channels before delete clients.
 	clients.erase(clientFd);
 	close(clientFd);
 }
@@ -93,12 +92,11 @@ void Server::readMessage(int clientFd) {
 	else if (readSize > 1 && buffer[readSize - 2] == '\r' && buffer[readSize - 1] == '\n')
 	{
 		message[clientFd].append(buffer);
-		std::clog << "[Log] " << clientFd << ":New message\n" << message[clientFd] << '\n';
+		std::clog << "[Log] " << clientFd << ":" << message[clientFd];
 		runCommand(clientFd);
 		message[clientFd].clear();
-		// when runCommand executes <QUIT>... then setPoll and close should be called here too?
 	}
-	else // Ctrl + D handling
+	else
 		message[clientFd].append(buffer);
 }
 
@@ -117,13 +115,13 @@ void Server::runCommand(int clientFd) {
 				command.pass(_pwd);
 				break;
 			case (NICK):
-				command.nick(clients);
+				command.nick(clients, channels);
 				break;
 			case (USER):
 				command.user(startTime);
 				break;
 			case (cOPER):
-				command.oper(clients, _pwd); // param fix needed
+				command.oper(clients, _pwd);
 				break;
 			case (JOIN):
 				command.join(channels);
@@ -132,13 +130,13 @@ void Server::runCommand(int clientFd) {
 				command.part(channels);
 				break;
 			case (INVITE):
-				command.invite(channels);
+				command.invite(clients, channels);
 				break;
 			case (KICK):
-				command.kick(channels);
+				command.kick(clients ,channels);
 				break;
 			case (QUIT):
-				command.quit();
+				command.quit(channels);
 				break;
 			case (cTOPIC):
 				command.topic(channels);
@@ -169,7 +167,10 @@ void Server::runCommand(int clientFd) {
 			noCommand = false;
 		}
 		if (command.isConnectEnd)
+		{
 			deleteClient(clientFd);
+			break;
+		}
 	}
 }
 
@@ -182,15 +183,12 @@ Server::~Server() {
 		it->second = nullptr;
 		++it;
 	}
-//	std::map<std::string, Channel*>::iterator it2 = channels.begin();
-//	while (it2 != channels.end())
-//	{
-//		delete it2->second;
-//		it2->second = nullptr;
-//		++it2;
-//	}
-	clients.clear();
-	message.clear();
-//	channels.clear();
+	std::map<std::string, Channel*>::iterator it2 = channels.begin();
+	while (it2 != channels.end())
+	{
+		delete it2->second;
+		it2->second = nullptr;
+		++it2;
+	}
 	close(serverFd);
 }

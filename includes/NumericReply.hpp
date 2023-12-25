@@ -6,6 +6,8 @@
 
 # define RPL_PONG(servername, ip) \
 	":" + servername + " PONG :" + ip + "\r\n"
+# define RPL_JOIN(nick, ip, channel) \
+	":" + nick + "!" + nick + "@" + ip + " JOIN " + channel + "\r\n"
 
 # define RPL_WELCOME(servername, nick) \
 	":" + servername + " 001 " + nick + " :Welcome to the Internet Relay Network " + nick + "\r\n"

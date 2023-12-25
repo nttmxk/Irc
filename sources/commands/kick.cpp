@@ -30,13 +30,14 @@
 *									; WiZ가 채널 #Finnish에서 John을 제거하도록 하는 KICK 메시지
 */
 
-void Command::kick(std::map<std::string, Channel*> &channelsInServer) {
+void Command::kick(std::map<int, Client*> &clientsInServer, std::map<std::string, Channel*> &channelsInServer) {
     int numParam = getNumParameter();
 	std::string servername = "irc.local";
 	std::string nick = client->getNickname();
 
 	if (numParam < 3) {
-		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "INVITE"));
+		messageIndex += numParam + 1;
+		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "KICK"));
 		return;
 	}
 
@@ -53,13 +54,13 @@ void Command::kick(std::map<std::string, Channel*> &channelsInServer) {
     }
 
     // 클라이언트가 타겟 채널에 참여하고 있는지 확인
-    if (channelPtr->isInChannel(nick) == false) {
+    if (!channelPtr->isInChannel(nick)) {
         sendReply(ERR_NOTONCHANNEL(servername, nick, targetChannel));
 		return;
     }
 
     // 클라이언트가 타겟 채널 kick 권한이 있는지 확인
-    if (channelPtr->isOperator(nick) == false) {
+    if (!channelPtr->isOperator(nick)) {
         sendReply(ERR_CHANOPRIVSNEEDED(servername, nick, targetChannel));
 		return;
     }
@@ -70,15 +71,19 @@ void Command::kick(std::map<std::string, Channel*> &channelsInServer) {
         std::string targetNick = *it;
 
         // 타겟 유저가 채널에 참여하고 있는지 확인
-        if (channelPtr->isInChannel(targetNick) == false) {
+        if (!channelPtr->isInChannel(targetNick)) {
             sendReply(ERR_USERNOTINCHANNEL(servername, nick, targetNick, targetChannel));
             return;
         }
 
-        // kick 실행
-        std::string kickMsg = USER_ADDR(nick, client->getUserName(), "127.0.0.1") \
-                                + " KICK " + targetChannel + " " + targetNick + "\r\n";
-        // 이 메시지를 채널로 보내야...?
+        std::string kickMsg = USER_ADDR(nick, client->getUserName(), "irc.local") \
+                                + " KICK :" + targetChannel + " " + targetNick + "\r\n";
+
+		Client* clientPtr = findClientByNick(clientsInServer, targetNick);
+		if (clientPtr == nullptr)
+			return;
+		clientPtr->quitChannel(targetChannel);
+//		sendToChannel(kickMsg, channelPtr);
         channelPtr->deleteMember(targetNick);
     }
 }

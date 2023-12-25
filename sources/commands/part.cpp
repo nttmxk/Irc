@@ -30,6 +30,7 @@ void Command::part(std::map<std::string, Channel*> &channelsInServer) {
 	std::string nick = client->getNickname();
 
 	if (numParam < 2) {
+		messageIndex += numParam + 1;
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "PART"));
 		return;
 	}
@@ -56,10 +57,19 @@ void Command::part(std::map<std::string, Channel*> &channelsInServer) {
         }
 
         // do part
-        std::string partMsg = USER_ADDR(nick, client->getUserName(), "127.0.0.1") \
-                                + " invite " + targetChannel = "\r\n";
-        // 채널로 이 메세지 보내야함
+        std::string partMsg = ":" + USER_ADDR(nick, nick, "irc.local") \
+                                + " PART :" + targetChannel + reason + "\r\n";
+
         channelPtr->deleteMember(nick);
+		client->quitChannel(targetChannel);
+		sendReply(partMsg);
+//		sendToChannel(partMsg, channelPtr);
+
+		if (channelPtr->getMemberNum() == 0)
+		{
+			delete channelPtr;
+			channelsInServer.erase(targetChannel);
+		}
     }
 }
 

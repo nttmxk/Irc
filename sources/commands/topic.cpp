@@ -33,6 +33,7 @@ void Command::topic(std::map<std::string, Channel*> &channelsInServer) {
 	std::string nick = client->getNickname();
 
 	if (numParam < 2) {
+		messageIndex += numParam + 1;
 		sendReply(ERR_NEEDMOREPARAMS(servername, nick, "TOPIC"));
 		return;
 	}
@@ -64,5 +65,5 @@ void Command::topic(std::map<std::string, Channel*> &channelsInServer) {
     std::string setTimeStr = std::to_string(std::time(nullptr));
     sendReply(RPL_TOPIC(servername, nick, targetChannel, newTopic));
     sendReply(RPL_TOPICWHOTIME(servername, nick, targetChannel, 
-                USER_ADDR(nick, client->getUserName(), "127.0.0.1"), setTimeStr));
+                USER_ADDR(nick, client->getUserName(), "irc.local"), setTimeStr));
 }

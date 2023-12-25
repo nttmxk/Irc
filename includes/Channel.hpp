@@ -4,6 +4,7 @@
 # include <map>
 # include <vector>
 # include <string>
+# include <iostream> // for testing
 
 class Client;
 
@@ -51,6 +52,7 @@ public:
 	std::string						getKey();	
 	std::string						getTopic();
 	std::string 					getChannelMode();
+	int 							getMemberNum();
 	// const int						getMemberLimit();
 	// std::map <std::string, Client&>	getMembers();
 	// std::vector<std::string>		getOperators();

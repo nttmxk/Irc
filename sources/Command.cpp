@@ -105,3 +105,12 @@ Channel* Command::isChannelExist(std::map<std::string,Channel*> &channelsInServe
 		return NULL;
 	return channel->second;
 }
+
+Client* Command::findClientByNick(std::map<int, Client*> &clientsInServer, std::string nick) {
+	std::map<int, Client*>::iterator it = clientsInServer.begin();
+	for (; it != clientsInServer.end() ; ++it) {
+		if (it->second->getNickname() == nick)
+			return it->second;
+	}
+	return nullptr;
+}

@@ -19,7 +19,6 @@ Channel::Channel(std::string const name, Client* creator)
 	mode[OPER] = false;
 	mode[USER_LIMIT] = false;
 
-	
 	addMember(creator, true);
 }
 
@@ -50,6 +49,10 @@ std::string Channel::getChannelMode() {
 	return modes;
 }
 
+int Channel::getMemberNum() {
+	return members.size();
+}
+
 
 /* Setter */
 void	Channel::setTopic(std::string newTopic) {
@@ -62,7 +65,7 @@ void	Channel::setKey(std::string newKey) {
 
 void	Channel::setMemberLimit(int n) {
 	if (n < 0)
-		n = 0;
+		n = -1;
 	this->memberLimit = n;
 }
 	
@@ -80,10 +83,12 @@ void Channel::addMember(Client* client, bool isOper) {
 }
 
 void Channel::deleteMember(const std::string targetNick) {
-	if (isInChannel(targetNick))
-		this->members.erase(targetNick);
-	normalMembers.erase(std::remove(normalMembers.begin(), normalMembers.end(), targetNick), normalMembers.end());
-	
+//	std::clog << "[Log] deleteMember\n";
+	if (!isInChannel(targetNick))
+		return;
+	this->members.erase(targetNick);
+	deleteOperator(targetNick);
+	deleteNormalMember(targetNick);
 }
 
 bool Channel::isFull() {
@@ -100,7 +105,6 @@ void Channel::addInvitedMember(Client* client) {
 	if (isInvitedMember(nickname))
 		addMember(client, false);
 	invitedUsers.erase(std::remove(invitedUsers.begin(), invitedUsers.end(), nickname), invitedUsers.end());
-	deleteOperator(nickname);
 }
 
 std::string Channel::getMemberStr() {
@@ -123,11 +127,13 @@ std::string Channel::getMemberStr() {
 
 /* Operator */
 bool Channel::isOperator(const std::string targetNick) const {
+//	std::clog << "[Log] isOperator\n";
 	std::vector<std::string>::const_iterator ret = std::find(operators.begin(), operators.end(), targetNick);
 	return ret != this->operators.end();
 }
 
 void Channel::addOperator(const std::string targetNick) {
+//	std::clog << "[Log] addOperator\n";
 	if (!isOperator(targetNick)) {
 		deleteNormalMember(targetNick);
 		this->operators.push_back(targetNick);
@@ -153,7 +159,11 @@ bool Channel::isModeOn(const char modeChar) {
 		if (modeChar == channelModeChar[idx])
 			break;
 	}
-	return idx < ChannelModeCnt ? mode[idx] : false;
+	if (idx < ChannelModeCnt) {
+		return mode[idx];
+	} else {
+		return false;
+	}
 }
 
 /* Normal Member */
