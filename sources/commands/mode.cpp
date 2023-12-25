@@ -73,8 +73,10 @@ void Command::mode(std::map<std::string, Channel *> &channelsInServer) {
 		for (int i = 1; modeString[i]; ++i) {
 			if (modeString[i] == 'i')
 				channel->offMode(INVITE_ONLY);
-			else if (modeString[i] == 't')
+			else if (modeString[i] == 't') {
 				channel->offMode(TOPIC);
+				channel->setTopic("");
+			}
 			else if (modeString[i] == 'k') {
 				if (channel->isOperator(nick)) {
 					channel->offMode(KEY);
