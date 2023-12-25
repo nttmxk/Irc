@@ -9,11 +9,11 @@ class Client;
 
 # define ChannelModeCnt 5
 enum {
-	INVITE_ONLY = 0,    // Set/remove Invite-only channel
-	TOPIC,                // Set/remove the restrictions of the TOPIC command to channel operators
-	KEY,                // Set/remove the channel key (password)
-	OPER,                // Give/take channel operator privilege
-	USER_LIMIT            // Set/remove the user limit to channel
+	INVITE_ONLY = 0,	// Set/remove Invite-only channel
+	TOPIC,				// Set/remove the restrictions of the TOPIC command to channel operators
+	KEY,				// Set/remove the channel key (password)
+	OPER,				// Give/take channel operator privilege
+	USER_LIMIT			// Set/remove the user limit to channel
 };
 
 static const char channelModeChar[ChannelModeCnt] = {'i', 't', 'k', 'o', 'l'};
@@ -31,7 +31,7 @@ private:
 
 	// 참여가능한 멤버 수 제한
 	unsigned long memberLimit;
-	// 채널에 속해 있는 모든 멤버 리스트, key: nickname (fd로 수정할 수도...?)
+	// 채널에 속해 있는 모든 멤버 리스트, key: nickname
 	std::map<std::string, Client *> members;
 	// 운영자(operator) 리스트
 	std::vector <std::string> operators;
